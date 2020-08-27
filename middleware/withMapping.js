@@ -1,10 +1,12 @@
 const { Client } = require('cassandra-driver');
+const { RedisClient } = require('redis');
 
 /**
  * Inject from_url and to_url to headers
  * @param {Client} cassandraClient Client to execute commands on
+ * @param {RedisClient} redisClient Client to execute cache commands on
  */
-module.exports.withMapping = function (cassandraClient) {
+module.exports.withMapping = function (cassandraClient, redisClient) {
   const router = require('express').Router();
   const statements = require('../util/database/statements');
   const settings = require('../ocshorten.conf.json');
@@ -60,6 +62,11 @@ module.exports.withMapping = function (cassandraClient) {
   router.get('/:key', async function (req, res, next) {
     const letters = req.params.key;
 
+    // Cached
+    if (req.existingMapping) {
+      return next();
+    }
+
     try {
       let result = await cassandraClient.execute(
         statements.SELECT_URL_MAPPING_FROM_KEY,
@@ -77,6 +84,9 @@ module.exports.withMapping = function (cassandraClient) {
         fromUrl: result.from_url,
         toUrl: result.to_url,
       };
+
+      // Add to cache / extend time
+      redisClient.set(letters, result.to_url, 'EX', settings.redis.expireTime);
     } catch (e) {
       console.log('Error in withMapping, /*', e);
       req.existingMapping = false;

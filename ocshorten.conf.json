@@ -7,5 +7,7 @@
     "localDataCenter": "datacenter1",
     "keyspace": "ocshorten"
   },
-  "redis": {}
+  "redis": {
+    "expireTime": 86400
+  }
 }

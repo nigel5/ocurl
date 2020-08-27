@@ -5,7 +5,7 @@ module.exports = function () {
   /**
    * Redirect user to decoded url
    */
-  router.get('/*', async function (req, res, next) {
+  router.get('/:key', async function (req, res, next) {
     if (req.existingMapping) {
       res.redirect(req.existingMapping.toUrl);
     } else {

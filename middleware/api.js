@@ -90,7 +90,9 @@ module.exports = function (cassandraClient) {
 
     q = q.split('/').pop();
 
-    // TODO cache
+    if (req.existingMapping) {
+      return res.send(responses.dataResponse(req.existingMapping));
+    }
 
     try {
       const result = await shortUrlDecoder(cassandraClient, q);

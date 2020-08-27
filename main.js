@@ -12,6 +12,7 @@ const logging = require('./middleware/logging');
 const settings = require('./ocshorten.conf.json');
 const { withMapping } = require('./middleware/withMapping');
 const { INIT_URL_MAPPING } = require('./util/database/statements');
+const helmet = require('helmet');
 
 /**
  * Database connection
@@ -33,12 +34,21 @@ cassandraClient.connect(function (err) {
 /**
  * Cache connection
  */
+const redisClient = redis.createClient();
+redisClient.on('error', function (err) {
+  console.log('Redis Error occured', err);
+});
+
+redisClient.on('connect', function () {
+  console.log('Connected to Redis');
+});
 
 const app = express();
 const port = 3000;
 
-app.use(caching());
-app.use(withMapping(cassandraClient));
+app.use(helmet());
+app.use(caching(redisClient));
+app.use(withMapping(cassandraClient, redisClient));
 app.use(logging);
 app.use(api(cassandraClient));
 app.use(redirects());
