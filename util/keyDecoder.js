@@ -1,5 +1,6 @@
 const { Client } = require('cassandra-driver');
 const statements = require('./database/statements');
+const settings = require('../ocshorten.conf.json');
 
 /**
  * @typedef {Object} Result A url mapping result
@@ -8,16 +9,17 @@ const statements = require('./database/statements');
  */
 
 /**
- * Retrieve information about a short url
+ * Retrieve information about a key
  * @param {Client} cassandraClient Client to execute commands on
- * @param {string} shortenedUrl The short url to decode
+ * @param {string} key The key to decode
  *
  * @returns {Result} result
  */
-module.exports = async function (cassandraClient, shortenedUrl) {
-  let result = await cassandraClient.execute(statements.SELECT_URL_2, [
-    shortenedUrl,
-  ]);
+module.exports = async function (cassandraClient, key) {
+  let result = await cassandraClient.execute(
+    statements.SELECT_URL_MAPPING_FROM_KEY,
+    [key]
+  );
 
   if (result.rowLength < 1) {
     return false;
@@ -26,7 +28,7 @@ module.exports = async function (cassandraClient, shortenedUrl) {
   result = result.first();
 
   return {
-    fromUrl: result.from_url,
+    fromUrl: `${settings.base_url}/${result.from_key}`,
     toUrl: result.to_url,
   };
 };

@@ -11,6 +11,7 @@ const logging = require('./middleware/logging');
 
 const settings = require('./ocshorten.conf.json');
 const { withMapping } = require('./middleware/withMapping');
+const { INIT_URL_MAPPING } = require('./util/database/statements');
 
 /**
  * Database connection
@@ -24,6 +25,8 @@ cassandraClient.connect(function (err) {
     console.log(
       `Connected to Cassandra db at ${settings.cassandra.contactPoints}`
     );
+
+    cassandraClient.execute(INIT_URL_MAPPING);
   }
 });
 

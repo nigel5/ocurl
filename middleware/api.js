@@ -12,7 +12,7 @@ module.exports = function (cassandraClient) {
   const rollStr = require('../util/generation').rollStr;
   const settings = require('../ocshorten.conf.json');
   const statements = require('../util/database/statements');
-  const shortUrlDecoder = require('../util/shortUrlDecoder');
+  const shortUrlDecoder = require('../util/keyDecoder');
 
   const numberOfCharacters = process.env.GENERATED_URL_LENGTH
     ? process.env.GENERATED_URL_LENGTH
@@ -60,8 +60,8 @@ module.exports = function (cassandraClient) {
     // Save url in cache
 
     // Save in perm database for long term
-    cassandraClient.execute(statements.INSERT_URL, [
-      shortUrl,
+    cassandraClient.execute(statements.INSERT_URL_MAPPING, [
+      letters,
       originalUrl,
       LocalDate.now(),
       requesterIp,
@@ -72,12 +72,12 @@ module.exports = function (cassandraClient) {
    * Decodes a short url
    *
    * Query parameters
-   * q string The shortened url
+   * q string The shortened url or key
    */
   router.get('/api/v1/decode', async function (req, res, next) {
-    const shortenedUrl = req.query.q;
+    let q = req.query.q;
 
-    if (!shortenedUrl) {
+    if (!q) {
       return res
         .status(400)
         .send(
@@ -88,10 +88,12 @@ module.exports = function (cassandraClient) {
         );
     }
 
+    q = q.split('/').pop();
+
     // TODO cache
 
     try {
-      const result = await shortUrlDecoder(cassandraClient, shortenedUrl);
+      const result = await shortUrlDecoder(cassandraClient, q);
 
       if (!result) {
         return res
