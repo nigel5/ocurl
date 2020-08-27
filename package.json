@@ -15,9 +15,31 @@
     "redis": "^3.0.2"
   },
   "scripts": {
+    "lint:check": "prettier . --check",
+    "lint:run": "prettier . --write --ignore-unknown",
     "dev": "nodemon ./main.js"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^9.1.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.13",
+    "nodemon": "^2.0.4",
+    "prettier": "2.1.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
