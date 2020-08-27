@@ -4,10 +4,10 @@ const express = require('express');
 const redis = require('redis');
 const cassandra = require('cassandra-driver');
 
-const api = require('./middleware/api');
-const redirects = require('./middleware/redirects');
-const caching = require('./middleware/caching');
-const logging = require('./middleware/logging');
+const withApi = require('./middleware/withApi');
+const withRedirects = require('./middleware/withRedirects');
+const withCaching = require('./middleware/withCaching');
+const withLogging = require('./middleware/withLogging');
 
 const settings = require('./ocshorten.conf.json');
 const { withMapping } = require('./middleware/withMapping');
@@ -47,11 +47,11 @@ const app = express();
 const port = 3000;
 
 app.use(helmet());
-app.use(caching(redisClient));
+app.use(withCaching(redisClient));
 app.use(withMapping(cassandraClient, redisClient));
-app.use(logging);
-app.use(api(cassandraClient));
-app.use(redirects());
+app.use(withLogging);
+app.use(withApi(cassandraClient));
+app.use(withRedirects());
 
 app.listen(port, () => {
   console.log(`One Click Shorten (ocshorten) server started on port ${port}`);
