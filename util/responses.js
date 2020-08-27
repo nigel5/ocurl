@@ -4,9 +4,9 @@
  */
 module.exports.dataResponse = function (data) {
   return {
-    "data": data
+    data: data,
   };
-}
+};
 
 /**
  * Create a error resposne payload
@@ -15,7 +15,18 @@ module.exports.dataResponse = function (data) {
  */
 module.exports.errResponse = function (err, message) {
   return {
-    "err": err,
-    "message": message
+    err: err,
+    message: message,
   };
-}
+};
+
+/**
+ * Create an internal server error response payload
+ * TODO needs more info
+ */
+module.exports.internalErrResponse = function () {
+  return {
+    err: true,
+    message: 'Interal server error (500) has occured',
+  };
+};

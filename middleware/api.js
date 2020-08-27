@@ -12,6 +12,7 @@ module.exports = function (cassandraClient) {
   const rollStr = require('../util/generation').rollStr;
   const settings = require('../ocshorten.conf.json');
   const statements = require('../util/database/statements');
+  const shortUrlDecoder = require('../util/shortUrlDecoder');
 
   const numberOfCharacters = process.env.GENERATED_URL_LENGTH
     ? process.env.GENERATED_URL_LENGTH
@@ -42,9 +43,9 @@ module.exports = function (cassandraClient) {
     const originalUrl = req.query.q;
 
     if (!originalUrl) {
-      return res.send(
-        responses.errResponse(false, 'You must provide a url to shorten')
-      );
+      return res
+        .status(400)
+        .send(responses.errResponse(true, 'You must provide a url to shorten'));
     }
 
     const shortUrl = `${baseURL}/${letters}`;
@@ -77,37 +78,31 @@ module.exports = function (cassandraClient) {
     const shortenedUrl = req.query.q;
 
     if (!shortenedUrl) {
-      return res.send(
-        responses.errResponse(
-          false,
-          'You must provide a shortened url to decode'
-        )
-      );
+      return res
+        .status(400)
+        .send(
+          responses.errResponse(
+            true,
+            'You must provide a shortened url to decode'
+          )
+        );
     }
 
     // TODO cache
 
     try {
-      let result = await cassandraClient.execute(statements.SELECT_URL_2, [
-        shortenedUrl,
-      ]);
+      const result = await shortUrlDecoder(cassandraClient, shortenedUrl);
 
-      if (result.rowLength < 1) {
-        return res.send(
-          responses.errResponse(false, `${shortenedUrl} does not exist`)
-        );
+      if (!result) {
+        return res
+          .status(400)
+          .send(responses.errResponse(true, 'The provided url does not exist'));
+      } else {
+        return res.send(responses.dataResponse(result));
       }
-
-      result = result.first();
-
-      return res.send(
-        responses.dataResponse({
-          fromUrl: result.from_url,
-          toUrl: result.to_url,
-        })
-      );
     } catch (e) {
-      console.log(e);
+      console.log("Error in router.get('/api/v1/decode...", e);
+      return res.status(500).send(responses.internalErrResponse());
     }
   });
 
