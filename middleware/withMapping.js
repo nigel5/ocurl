@@ -58,9 +58,7 @@ module.exports.withMapping = function (cassandraClient) {
   });
 
   router.get('/:key', async function (req, res, next) {
-    const letters = req.path.split('/').pop();
-
-    console.log('wildcard');
+    const letters = req.params.key;
 
     try {
       let result = await cassandraClient.execute(
