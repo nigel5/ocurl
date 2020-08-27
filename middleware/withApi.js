@@ -4,7 +4,7 @@ const { Client } = require('cassandra-driver');
  * Public API for One Click Shorten
  * @param {Client} cassandraClient Client to execute commands on
  */
-module.exports = function (cassandraClient) {
+module.exports = function (cassandraClient, redisClient) {
   const router = require('express').Router();
   const LocalDate = require('cassandra-driver').types.LocalDate;
 
@@ -58,6 +58,7 @@ module.exports = function (cassandraClient) {
     );
 
     // Save url in cache
+    redisClient.set(letters, originalUrl, 'EX', settings.redis.expireTime);
 
     // Save in perm database for long term
     cassandraClient.execute(statements.INSERT_URL_MAPPING, [

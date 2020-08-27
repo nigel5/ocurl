@@ -1,0 +1,10 @@
+{
+  "name": "ocshorten-chrome-ext",
+  "version": "1.0.0",
+  "description": "One click to shorten URLs",
+  "main": "index.js",
+  "author": "nigel5",
+  "license": "private",
+  "private": true,
+  "dependencies": {}
+}

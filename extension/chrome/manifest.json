@@ -1,0 +1,16 @@
+{
+  "name": "1 Click URL",
+  "version": "1.0",
+  "description": "One click to shorten url",
+  "permissions": ["storage", "clipboardWrite", "<all_urls>"],
+  "browser_action": {
+    "default_popup": "src/popup.html"
+  },
+  "manifest_version": 2,
+  "options_page": "src/options.html",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

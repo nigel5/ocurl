@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const path = require('path');
+
 const express = require('express');
 const redis = require('redis');
 const cassandra = require('cassandra-driver');
@@ -50,7 +52,7 @@ app.use(helmet());
 app.use(withCaching(redisClient));
 app.use(withMapping(cassandraClient, redisClient));
 app.use(withLogging);
-app.use(withApi(cassandraClient));
+app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
 
 app.listen(port, () => {
