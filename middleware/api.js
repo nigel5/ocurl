@@ -27,7 +27,15 @@ module.exports = function (cassandraClient) {
    * q string The original url
    */
   router.get('/api/v1/url', async function (req, res, next) {
-    // TODO dont generate if already exists
+    // Dont generate new link if already exists
+    if (req.existingMapping) {
+      return res.send(
+        responses.dataResponse({
+          url: req.existingMapping.fromUrl,
+        })
+      );
+    }
+
     // Generate letters
     const letters = rollStr(numberOfCharacters);
 
@@ -52,8 +60,8 @@ module.exports = function (cassandraClient) {
 
     // Save in perm database for long term
     cassandraClient.execute(statements.INSERT_URL, [
-      originalUrl,
       shortUrl,
+      originalUrl,
       LocalDate.now(),
       requesterIp,
     ]);
@@ -76,6 +84,8 @@ module.exports = function (cassandraClient) {
         )
       );
     }
+
+    // TODO cache
 
     try {
       let result = await cassandraClient.execute(statements.SELECT_URL_2, [

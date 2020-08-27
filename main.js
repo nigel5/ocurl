@@ -10,6 +10,7 @@ const caching = require('./middleware/caching');
 const logging = require('./middleware/logging');
 
 const settings = require('./ocshorten.conf.json');
+const { withMapping } = require('./middleware/withMapping');
 
 /**
  * Database connection
@@ -20,19 +21,21 @@ cassandraClient.connect(function (err) {
     console.log(`Error occured when connecting to database ${err}`);
     process.exit(1);
   } else {
-    console.log(`Connected to Cassandra db at ${settings.cassandra.contactPoints}`);
+    console.log(
+      `Connected to Cassandra db at ${settings.cassandra.contactPoints}`
+    );
   }
 });
 
 /**
-* Cache connection
-*/
-
+ * Cache connection
+ */
 
 const app = express();
 const port = 3000;
 
 app.use(caching());
+app.use(withMapping(cassandraClient));
 app.use(logging);
 app.use(api(cassandraClient));
 app.use(redirects());
