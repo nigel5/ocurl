@@ -1,5 +1,15 @@
 {
   "base_url": "https://nigel5.com",
   "generated_url_length": 5,
-  "unknown_redirect": ""
+  "unknown_redirect": "",
+  "cassandra": {
+    "contactPoints": [
+      "localhost:9042"
+    ],
+    "localDataCenter": "datacenter1",
+    "keyspace": "ocshorten"
+  },
+  "redis": {
+
+  }
 }
