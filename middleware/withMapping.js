@@ -9,7 +9,7 @@ const { RedisClient } = require('redis');
 module.exports.withMapping = function (cassandraClient, redisClient) {
   const router = require('express').Router();
   const statements = require('../util/database/statements');
-  const settings = require('../ocshorten.conf.json');
+  const settings = require('../main').settings;
 
   /**
    * Return the key if it already exists for this destination
@@ -86,7 +86,17 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
       };
 
       // Add to cache / extend time
-      redisClient.set(letters, result.to_url, 'EX', settings.redis.expireTime);
+      try {
+        redisClient.set(
+          letters,
+          result.to_url,
+          'EX',
+          settings.redis.expireTime
+        );
+      } catch (e) {
+        console.warn('Cache is offline');
+        console.error(e);
+      }
     } catch (e) {
       console.log('Error in withMapping, /*', e);
       req.existingMapping = false;

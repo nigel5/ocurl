@@ -5,6 +5,12 @@ module.exports.INIT_URL_MAPPING =
   'CREATE TABLE IF NOT EXISTS url_mapping (from_key varchar, to_url varchar, created_on date, original_creator_ip varchar, PRIMARY KEY (from_key))';
 
 /**
+ * Initialize keyspace
+ */
+module.exports.INIT_KEYSPACE =
+  "CREATE KEYSPACE IF NOT EXISTS ocurl WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': 2 }";
+
+/**
  * Insert a mapped url
  */
 module.exports.INSERT_URL_MAPPING =

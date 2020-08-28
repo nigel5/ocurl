@@ -1,6 +1,6 @@
 const { Client } = require('cassandra-driver');
 const statements = require('./database/statements');
-const settings = require('../ocshorten.conf.json');
+const settings = require('../main').settings;
 
 /**
  * @typedef {Object} Result A url mapping result

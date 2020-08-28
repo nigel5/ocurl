@@ -1,9 +1,9 @@
 {
-  "name": "ocshorten",
+  "name": "ocurl",
   "version": "1.0.0",
   "description": "One click URL shortener",
   "main": "index.js",
-  "repository": "https://github.com/nigel5/ocshorten.git",
+  "repository": "https://github.com/nigel5/ocurl.git",
   "author": "nigel5",
   "license": "private",
   "private": true,
@@ -17,7 +17,8 @@
   "scripts": {
     "lint:check": "prettier . --check",
     "lint:run": "prettier . --write --ignore-unknown",
-    "dev": "nodemon ./main.js"
+    "dev": "nodemon ./main.js",
+    "start": "NODE_ENV=production node main.js"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",

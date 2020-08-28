@@ -3,11 +3,12 @@
   "generated_url_length": 5,
   "unknown_redirect": "",
   "cassandra": {
-    "contactPoints": ["localhost:9042"],
-    "localDataCenter": "datacenter1",
-    "keyspace": "ocshorten"
+    "contactPoints": ["cassandra"],
+    "localDataCenter": "datacenter1"
   },
   "redis": {
+    "hostname": "redis",
+    "post": 6379,
     "expireTime": 86400
   }
 }

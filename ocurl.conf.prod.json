@@ -1,0 +1,14 @@
+{
+  "base_url": "localhost:3000",
+  "generated_url_length": 5,
+  "unknown_redirect": "",
+  "cassandra": {
+    "contactPoints": ["cassandra"],
+    "localDataCenter": "datacenter1"
+  },
+  "redis": {
+    "hostname": "redis",
+    "post": 6379,
+    "expireTime": 86400
+  }
+}

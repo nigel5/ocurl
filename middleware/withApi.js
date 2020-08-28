@@ -10,7 +10,7 @@ module.exports = function (cassandraClient, redisClient) {
 
   const responses = require('../util/responses');
   const rollStr = require('../util/generation').rollStr;
-  const settings = require('../ocshorten.conf.json');
+  const settings = require('../main').settings;
   const statements = require('../util/database/statements');
   const shortUrlDecoder = require('../util/keyDecoder');
 
@@ -58,7 +58,12 @@ module.exports = function (cassandraClient, redisClient) {
     );
 
     // Save url in cache
-    redisClient.set(letters, originalUrl, 'EX', settings.redis.expireTime);
+    try {
+      redisClient.set(letters, originalUrl, 'EX', settings.redis.expireTime);
+    } catch (e) {
+      console.warn('Cache is offline');
+      console.error(e);
+    }
 
     // Save in perm database for long term
     cassandraClient.execute(statements.INSERT_URL_MAPPING, [
@@ -108,6 +113,35 @@ module.exports = function (cassandraClient, redisClient) {
     } catch (e) {
       console.log("Error in router.get('/api/v1/decode...", e);
       return res.status(500).send(responses.internalErrResponse());
+    }
+  });
+
+  /**
+   * Health Check
+   */
+  router.all('/health', function (req, res) {
+    const cassandraState = cassandraClient.getState();
+    /**
+     * Cache
+     */
+    if (redisClient) {
+      redisClient.set('healthCheckZZZ', '_', 'EX', '1', function (err, reply) {
+        if (reply) {
+          /**
+           * Database
+           */
+          if (
+            cassandraState._openConnections &&
+            Object.keys(cassandraState._openConnections).length > 0
+          ) {
+            res.status(200).send('ok');
+          }
+        } else {
+          return res.status(503).send('unavailable');
+        }
+      });
+    } else {
+      res.status(503).send('unavailable');
     }
   });
 
