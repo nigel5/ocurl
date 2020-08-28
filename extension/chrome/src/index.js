@@ -39,5 +39,8 @@ chrome.tabs.getSelected(null, function (tab) {
         );
       }
     })
-    .catch((e) => alert(e));
+    .catch((e) => {
+      console.log(e);
+      alert('Could not get your short url at this time. Sorry.');
+    });
 });
