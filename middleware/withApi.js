@@ -119,7 +119,7 @@ module.exports = function (cassandraClient, redisClient) {
   /**
    * Health Check
    */
-  router.all('/health', function (req, res) {
+  router.all('/api/v1/health', function (req, res) {
     const cassandraState = cassandraClient.getState();
     /**
      * Cache
