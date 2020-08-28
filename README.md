@@ -11,9 +11,28 @@
 - Cached by default (still works if cache is offline!)
 - Unobtrusive one click Chrome extension to shorten current page URLs and copy to clipboad
 - Ready to be scaled horizontally
-- Simple configuration and deployment
+- Simple configuration and deployment. Docker 🐋 ready.
 
 ## Public API
+
+There are only two types of responses: data (200) and error response (5xx).
+
+A data response is the following structure
+
+```json
+{
+  "data": [Object]
+}
+```
+
+An error response is the following structure
+
+```json
+{
+  "error": [Object],
+  "message": string
+}
+```
 
 | Method | Endpoint       | Query parameters?                | Description                               |
 | ------ | -------------- | -------------------------------- | ----------------------------------------- |
