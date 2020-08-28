@@ -78,7 +78,7 @@ redisClient.on('connect', function () {
 });
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(helmet());
 app.use(withCaching(redisClient));
@@ -87,6 +87,6 @@ app.use(withLogging);
 app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
 
-app.listen(port, () => {
+app.listen(port, settings.hostname, () => {
   console.log(`One Click URL (ocurl) server started on port ${port}`);
 });

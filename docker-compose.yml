@@ -38,3 +38,5 @@ services:
       interval: 5s
       timeout: 1m
       retries: 10
+    environment:
+      - PORT=3000
