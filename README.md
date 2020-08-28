@@ -25,15 +25,15 @@
 
 ```javascript
 fetch('https://onecurl.com/api/v1/url?q=https://github.com')
-  .then(res => res.json())
-  .then(json => console.log(json));
+  .then((res) => res.json())
+  .then((json) => console.log(json));
 
-  // Output:
-  // {
-  //  "data": {
-  //      "url": "localhost:3000/ou6p1"
-  //  }
-}
+// Output:
+// {
+//   "data": {
+//     "url": "localhost:3000/ou6p1"
+//   }
+// }
 ```
 
 ## Requirements
