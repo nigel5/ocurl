@@ -1,5 +1,5 @@
 {
-  "name": "ocshorten-chrome-ext",
+  "name": "ocurl-chrome-ext",
   "version": "1.0.0",
   "description": "One click to shorten URLs",
   "main": "index.js",

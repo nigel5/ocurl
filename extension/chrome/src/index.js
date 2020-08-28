@@ -5,26 +5,11 @@ chrome.tabs.getSelected(null, function (tab) {
   const API_URL = 'http://localhost:3000/api/v1/url?q=';
 
   /**
-   * Retrieved short url from API
-   */
-  let retrievedUrl = null;
-
-  /**
    * Copies retrieved url to clipboard
    */
-  function copyToClipboard(e) {
-    if (!retrievedUrl) return;
-
-    e.preventDefault();
-
-    if (e.clipboardData) {
-      e.clipboardData.setData('text/plain', retrievedUrl);
-    } else if (window.clipboardData) {
-      window.clipboardData.setData('Text', retrievedUrl);
-    }
+  function copyToClipboard(url) {
+    navigator.clipboard.writeText(url);
   }
-
-  window.addEventListener('copy', copyToClipboard);
 
   const req = API_URL + encodeURI(tab.url);
   fetch(req)
@@ -40,7 +25,7 @@ chrome.tabs.getSelected(null, function (tab) {
           },
           function (items) {
             if (items.autocopy === true) {
-              document.execCommand('copy');
+              copyToClipboard(result);
               result = 'Copied to clipboard\n' + result;
             }
 
@@ -49,7 +34,6 @@ chrome.tabs.getSelected(null, function (tab) {
             /**
              * Clean up
              */
-            window.removeEventListener('copy', copyToClipboard);
             window.close();
           }
         );
