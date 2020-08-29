@@ -6,6 +6,7 @@
  */
 module.exports = function () {
   const router = require('express').Router();
+  const a = require('debug')('middleware:redirects');
 
   const defaultRedirectUrl =
     process.env.DEFAULT_REDIRECT_URL ||
@@ -16,8 +17,14 @@ module.exports = function () {
    */
   router.get('/:key', async function (req, res, next) {
     if (req.existingMapping) {
+      a(
+        `Redirecting client ${req.ip} ${req.originalUrl} -> ${req.existingMapping.toUrl}`
+      );
       return res.redirect(req.existingMapping.toUrl);
     } else {
+      a(
+        `Redirecting client ${req.ip} ${req.originalUrl} -> ${defaultRedirectUrl}`
+      );
       return res.redirect(defaultRedirectUrl);
     }
   });
