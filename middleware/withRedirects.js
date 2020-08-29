@@ -1,6 +1,15 @@
+/**
+ * Middleware to redirect urls with short url param
+ *
+ * Settings
+ * DEFAULT_REDIRECT_URL
+ */
 module.exports = function () {
   const router = require('express').Router();
-  const responses = require('../util/responses');
+
+  const defaultRedirectUrl =
+    process.env.DEFAULT_REDIRECT_URL ||
+    require('../main').settings.default_redirect_url;
 
   /**
    * Redirect user to decoded url
@@ -9,7 +18,7 @@ module.exports = function () {
     if (req.existingMapping) {
       return res.redirect(req.existingMapping.toUrl);
     } else {
-      return res.status(400).send(responses.errResponse(true, 'Invalid url')); // TODO this needs to be a pretty page
+      return res.redirect(defaultRedirectUrl);
     }
   });
 

@@ -6,6 +6,7 @@
   "rate_limit": 100,
   "rate_limit_expire_time": 3600,
   "cache_expire_time": 86400,
+  "default_redirect_url": "https://ocurl.io",
   "cassandra": {
     "contactPoints": ["cassandra"],
     "localDataCenter": "datacenter1"
