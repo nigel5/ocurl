@@ -113,7 +113,7 @@ app.use(
           '*.googletagmanager.com',
           '*.jsdelivr.net',
           'code.jquery.com',
-          'https://www.google-analytics.com/analytics.js',
+          'https://www.google-analytics.com',
         ],
         styleSrc: ["'self'", '*.bootstrapcdn.com'],
       },
