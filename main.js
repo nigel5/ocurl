@@ -31,6 +31,7 @@ const { withMapping } = require('./middleware/withMapping');
 const {
   INIT_KEYSPACE,
   INIT_URL_MAPPING,
+  INIT_INDEX,
 } = require('./util/database/statements');
 const helmet = require('helmet');
 
@@ -53,6 +54,7 @@ cassandraClient.connect(async function (err) {
     await cassandraClient.execute(INIT_KEYSPACE, []);
     await cassandraClient.execute('USE ocurl');
     await cassandraClient.execute(INIT_URL_MAPPING, []);
+    await cassandraClient.execute(INIT_INDEX, []);
     console.log(
       `Connected to Cassandra db at ${settings.cassandra.contactPoints}`
     );

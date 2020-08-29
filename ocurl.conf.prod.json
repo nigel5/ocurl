@@ -1,6 +1,7 @@
 {
   "base_url": "localhost:3000",
-  "generated_url_length": 5,
+  "generated_path_length": 5,
+  "max_path_length": 12,
   "unknown_redirect": "",
   "cassandra": {
     "contactPoints": ["cassandra"],

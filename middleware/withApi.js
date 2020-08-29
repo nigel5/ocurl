@@ -14,12 +14,10 @@ module.exports = function (cassandraClient, redisClient) {
   const statements = require('../util/database/statements');
   const shortUrlDecoder = require('../util/keyDecoder');
 
-  const numberOfCharacters = process.env.GENERATED_URL_LENGTH
-    ? process.env.GENERATED_URL_LENGTH
-    : settings.generated_url_length;
-  const baseURL = process.env.BASE_URL
-    ? process.env.BASE_URL
-    : settings.base_url;
+  const defaultPathLength =
+    process.env.GENERATED_PATH_LENGTH || settings.generated_path_length;
+  const maxPathLength = process.env.MAX_PATH_LENGTH || settings.max_path_length;
+  const baseURL = process.env.BASE_URL || settings.base_url;
 
   /**
    * Get a short url
@@ -37,10 +35,22 @@ module.exports = function (cassandraClient, redisClient) {
       );
     }
 
-    // Generate letters
-    const letters = rollStr(numberOfCharacters);
-
     const originalUrl = req.query.q;
+    const pathLength = req.query.length || defaultPathLength;
+
+    if (pathLength < 1 || pathLength > maxPathLength) {
+      return res
+        .status(400)
+        .send(
+          responses.errResponse(
+            true,
+            `Provided path length must be between ${1} and ${maxPathLength}`
+          )
+        );
+    }
+
+    // Generate letters
+    const letters = rollStr(pathLength);
 
     if (!originalUrl) {
       return res

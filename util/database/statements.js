@@ -11,6 +11,12 @@ module.exports.INIT_KEYSPACE =
   "CREATE KEYSPACE IF NOT EXISTS ocurl WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': 2 }";
 
 /**
+ * Initialize indices
+ */
+module.exports.INIT_INDEX =
+  'CREATE INDEX IF NOT EXISTS ON url_mapping (to_url)';
+
+/**
  * Insert a mapped url
  */
 module.exports.INSERT_URL_MAPPING =
