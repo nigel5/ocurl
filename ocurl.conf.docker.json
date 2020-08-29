@@ -1,8 +1,8 @@
 {
-  "base_url": "localhost:3000",
+  "base_url": "ocurl.io",
   "generated_path_length": 5,
   "max_path_length": 12,
-  "unknown_redirect": "",
+  "unknown_redirect": "ocurl.io",
   "cassandra": {
     "contactPoints": ["cassandra"],
     "localDataCenter": "datacenter1"

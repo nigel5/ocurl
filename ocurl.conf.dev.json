@@ -2,7 +2,7 @@
   "base_url": "localhost:3000",
   "generated_path_length": 5,
   "max_path_length": 12,
-  "unknown_redirect": "",
+  "unknown_redirect": "localhost:3000",
   "cassandra": {
     "contactPoints": ["localhost"],
     "localDataCenter": "datacenter1"
