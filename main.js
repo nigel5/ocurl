@@ -82,8 +82,8 @@ redisClient.on('connect', function () {
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(withCaching(redisClient));
 app.use(withMapping(cassandraClient, redisClient));
 app.use(withLogging);
