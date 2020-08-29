@@ -39,7 +39,7 @@ module.exports = function (cassandraClient, redisClient) {
   router.get('/api/v1/url', async function (req, res, next) {
     // Dont generate new link if already exists
     if (req.existingMapping) {
-      return res.send(
+      return res.status(200).send(
         responses.dataResponse({
           url: req.existingMapping.fromUrl,
         })
@@ -118,7 +118,7 @@ module.exports = function (cassandraClient, redisClient) {
     q = q.split('/').pop();
 
     if (req.existingMapping) {
-      return res.send(responses.dataResponse(req.existingMapping));
+      return res.status(200).send(responses.dataResponse(req.existingMapping));
     }
 
     try {
