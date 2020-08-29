@@ -1,0 +1,35 @@
+body {
+  background-color: #263238;
+  color: white;
+}
+
+.main-container {
+  max-width: 45em;
+}
+
+.nav-link-btn {
+  background: #f7f7f7;
+  color: black;
+  border-radius: 3px;
+  margin-left: 0.5em;
+}
+
+.nav-link-btn:hover {
+  background: #dedede;
+  color: black;
+  border-radius: 3px;
+  margin-left: 0.5em;
+}
+
+.editor-container {
+  margin-bottom: 3em;
+  max-width: 100%;
+}
+
+pre {
+  display: inline;
+}
+
+footer {
+  padding-bottom: 1em;
+}

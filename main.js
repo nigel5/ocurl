@@ -94,6 +94,7 @@ app.use(
           '*.jsdelivr.net',
           'code.jquery.com',
         ],
+        styleSrc: ["'self'", '*.bootstrapcdn.com'],
       },
     },
   })
