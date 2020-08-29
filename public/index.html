@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+
+    <title>One Click URL</title>
+
+    <style>
+      body {
+        background-color: #263238;
+        color: white;
+      }
+
+      .main-container {
+        max-width: 45em;
+      }
+
+      .nav-link-btn {
+        background: #f7f7f7;
+        color: black;
+        border-radius: 3px;
+        margin-left: 0.5em;
+      }
+
+      .nav-link-btn:hover {
+        background: #dedede;
+        color: black;
+        border-radius: 3px;
+        margin-left: 0.5em;
+      }
+
+      .editor-container {
+        margin-bottom: 3em;
+        max-width: 100%;
+      }
+
+      pre {
+        display: inline;
+      }
+
+      footer {
+        padding-bottom: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="main-container container">
+      <div class="row">
+        <div class="col">
+          <h3>Ocurl</h3>
+        </div>
+      </div>
+    </header>
+    <main class="main-container container mt-5 mb-5">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <h1 class="display-2 text-center">Ocurl</h1>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <p class="text-center">
+            Ocurl (prononced <i>oh-curl</i>), the URL shortener REST API
+          </p>
+          <!-- <p class="text-center">Now available as a Chrome Extension and Discord Bot</p> -->
+        </div>
+      </div>
+
+      <hr style="background-color: white" />
+
+      <div id="example" class="row editor-container">
+        <div class="col-12">
+          <h2>Example</h2>
+          <p>Get a shortened url for https://github.com</p>
+          <pre><code class="javascript">fetch('https://ocurl.io/api/v1/url?q=https://github.com')
+  .then((res) => res.json())
+  .then((json) => console.log(json));
+// Output:
+// {
+//   "data": {
+//     "url": "ocurl.io/ou6p1"
+//   }
+// }</code></pre>
+        </div>
+      </div>
+
+      <div id="resources" class="row">
+        <div class="col-12">
+          <h2>Resources</h2>
+          <p>
+            There are only two possible response types from the service. Data or
+            error.
+          </p>
+          <pre><code class="javascript">// Data response
+{
+  "data": Object
+}
+
+// Error response
+{
+  "err": Object,
+  "message": string
+}</code></pre>
+        </div>
+      </div>
+
+      <div id="api" class="row">
+        <div class="col-12">
+          <h2>Available endpoints</h2>
+          <div>
+            <p>Get a short URL</p>
+            <pre><code class="md">GET /api/v1/url
+            Query Parameters
+              - q {string} The destination URL
+                      </code></pre>
+          </div>
+
+          <div>
+            <p>Decode a short url or path</p>
+            <pre><code class="md">GET /api/v1/decode
+            Query Parameters
+              - q {string} The short URL or path
+                      </code></pre>
+          </div>
+
+          <div>
+            <p>System status check</p>
+            <pre><code class="md">GET /api/v1/health
+            Query Parameters
+              none
+                      </code></pre>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="main-container container">
+      <div class="row justify-content-center">
+        <div class="col-4">&copy; Nigel Huang 2020</div>
+      </div>
+    </footer>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Syntax Highlighting -->
+    <link rel="stylesheet" href="/static/vendor/dracula.css" />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.2/build/highlight.min.js"></script>
+    <script>
+      hljs.initHighlightingOnLoad();
+    </script>
+  </body>
+</html>

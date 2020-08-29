@@ -88,6 +88,10 @@ app.use(withMapping(cassandraClient, redisClient));
 app.use(withLogging);
 app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
+app.use('/static', express.static(path.join(__dirname, 'public')));
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.listen(port, settings.hostname, () => {
   console.log(`One Click URL (ocurl) server started on port ${port}`);
