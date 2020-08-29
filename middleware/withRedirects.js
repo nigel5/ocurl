@@ -7,9 +7,9 @@ module.exports = function () {
    */
   router.get('/:key', async function (req, res, next) {
     if (req.existingMapping) {
-      res.redirect(req.existingMapping.toUrl);
+      return res.redirect(req.existingMapping.toUrl);
     } else {
-      res.status(400).send(responses.errResponse(true, 'Invalid url')); // TODO this needs to be a pretty page
+      return res.status(400).send(responses.errResponse(true, 'Invalid url')); // TODO this needs to be a pretty page
     }
   });
 

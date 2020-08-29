@@ -1,6 +1,6 @@
 <h1><b>O</b>ne <b>C</b>lick <b>U</b>RL</h1>
 <p align="center">
-  <img align="center" src="extension/chrome/icon128.png">
+  <img align="center" src="public/img/icon128.png">
 </P>
 
 > OCUrl: URL shortening service API and Chrome Extension
