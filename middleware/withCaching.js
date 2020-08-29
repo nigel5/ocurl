@@ -18,32 +18,66 @@ module.exports = function (redisClient) {
 
   d('Initialized middleware');
 
-  router.get('/:key', async function (req, res, next) {
+  /**
+   * Retrieve and refresh a key in the cache
+   * @param {string} key The key
+   */
+  async function retrieveCachedKey(key) {
     // Attempt to retrieve value from cache
     // Refresh the expiry time if the key is found
+    return new Promise((resolve) => {
+      if (!redisClient || redisStatus() === 0) {
+        d('Cache is offline');
+        resolve(false);
+      }
 
-    if (!redisClient || redisStatus() === 0) {
-      d('Cache is offline');
-      return next();
+      redisClient.get(key, function (err, reply) {
+        if (reply === null || err) {
+          d('Cache is offline', err);
+          resolve(false);
+        } else {
+          const fromUrl = `${settings.base_url}/${key}`;
+
+          redisClient.expire(key, cacheExpireTime);
+          resolve({
+            fromUrl,
+            toUrl: reply,
+          });
+        }
+      });
+    });
+  }
+
+  /**
+   * API: Decode URL already in cache
+   */
+  router.get('/api/v1/decode', async function (req, res, next) {
+    if (!req.query.q) return next();
+
+    const cachedResult = await retrieveCachedKey(req.query.q);
+
+    if (cachedResult) {
+      d('Using cached mapping', cachedResult.fromUrl, '->', cachedResult.toUrl);
+      req.existingMapping = cachedResult;
     }
 
-    redisClient.get(req.params.key, function (err, reply) {
-      if (reply === null || err) {
-        d('Cache is offline');
-        req.existingMapping = false;
-      } else {
-        const fromUrl = `${settings.base_url}/${req.params.key}`;
+    next();
+  });
 
-        d('Using cached mapping', fromUrl, '->', reply);
-        req.existingMapping = {
-          fromUrl,
-          toUrl: reply,
-        };
+  /**
+   * Redirects
+   */
+  router.get('/:key', async function (req, res, next) {
+    if (!req.params.key) return next();
 
-        redisClient.expire(req.params.key, cacheExpireTime);
-      }
-      next();
-    });
+    const cachedResult = await retrieveCachedKey(req.params.key);
+
+    if (cachedResult) {
+      d('Using cached mapping', cachedResult.fromUrl, '->', cachedResult.toUrl);
+      req.existingMapping = cachedResult;
+    }
+
+    next();
   });
 
   return router;

@@ -35,7 +35,9 @@ module.exports = function (redisClient) {
         d('Error in rate limiter. Rate limiter has been bypassed', e);
         return next();
       } else if (reply != null && reply > rateLimit) {
-        req.log.info('Rate limit reached for the client of this request');
+        d(
+          `Rate limit reached for this client ${res.statusCode} ${req.ip} ${req.originalUrl}`
+        );
         return res.status(429).send(errResponse(true, 'Too many requests'));
       } else {
         redisClient.exists(currentIpKey, function (err, exists) {

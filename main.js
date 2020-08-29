@@ -122,9 +122,9 @@ app.use(
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(withLogging(app));
+app.use(withRateLimiter(redisClient));
 app.use(withCaching(redisClient));
 app.use(withMapping(cassandraClient, redisClient));
-app.use(withRateLimiter(redisClient));
 app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
 

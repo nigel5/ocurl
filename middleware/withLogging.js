@@ -15,7 +15,7 @@ module.exports = function (app) {
    */
   app.use(function (req, res, next) {
     res.on('finish', function () {
-      n(`${res.statusCode} ${req.originalUrl} ${req.ip}`);
+      n(`${res.statusCode} ${req.ip} ${req.originalUrl}`);
     });
     return next();
   });
@@ -24,7 +24,7 @@ module.exports = function (app) {
    * Request
    */
   router.all('*', function (req, res, next) {
-    n(`${req.method} ${req.originalUrl} ${req.ip}`);
+    n(`${req.method} ${req.ip} ${req.originalUrl}`);
     return next();
   });
 
