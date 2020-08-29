@@ -102,9 +102,9 @@ app.use(
 );
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(withLogging(app));
 app.use(withCaching(redisClient));
 app.use(withMapping(cassandraClient, redisClient));
-app.use(withLogging);
 app.use(withRateLimiter(redisClient));
 app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
@@ -112,3 +112,8 @@ app.use(withRedirects());
 app.listen(port, settings.hostname, () => {
   console.log(`One Click URL (ocurl) server started on port ${port}`);
 });
+
+/**
+ * Singleton access point for middlewares
+ */
+module.exports.app = app;

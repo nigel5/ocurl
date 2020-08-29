@@ -15,6 +15,8 @@ module.exports = function (redisClient) {
     throw 'Rate Limiter failed to initialize. No Redis client available';
   }
 
+  // TODO The X-Rate-Lim header may be utilized
+
   const router = require('express').Router();
   const settings = require('../main').settings;
 
@@ -41,8 +43,8 @@ module.exports = function (redisClient) {
                 ['expire', currentIpKey, rateLimitResetTime],
               ])
               .exec(function (err, reply) {
-                if (!err) {
-                  console.error('Error in rate limiter.', err);
+                if (err) {
+                  console.error('Error in rate limiter.', err, reply);
                 }
               });
           } else {
