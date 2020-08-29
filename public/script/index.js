@@ -1,5 +1,5 @@
-document.onload = function () {
-  hljs.initHighlighting();
+document.addEventListener('DOMContentLoaded', function () {
+  hljs.initHighlightingOnLoad();
 
   window.dataLayer = window.dataLayer || [];
   function gtag() {
@@ -8,4 +8,4 @@ document.onload = function () {
   gtag('js', new Date());
 
   gtag('config', 'UA-148475828-3');
-};
+});
