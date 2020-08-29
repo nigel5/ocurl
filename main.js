@@ -114,8 +114,14 @@ app.use(
           '*.jsdelivr.net',
           'code.jquery.com',
           'https://www.google-analytics.com',
+          'www.googletagmanager.com',
         ],
         styleSrc: ["'self'", '*.bootstrapcdn.com'],
+        imgSrc: [
+          "'self'",
+          'https://www.google-analytics.com',
+          'www.googletagmanager.com',
+        ],
       },
     },
   })
