@@ -32,8 +32,10 @@ module.exports = function (redisClient) {
       }
 
       redisClient.get(key, function (err, reply) {
-        if (reply === null || err) {
+        if (err) {
           d('Cache is offline', err);
+          resolve(false);
+        } else if (reply === null) {
           resolve(false);
         } else {
           const fromUrl = `${settings.base_url}/${key}`;
