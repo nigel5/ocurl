@@ -53,45 +53,9 @@
       crossorigin="anonymous"
     />
 
+    <link rel="stylesheet" href="/css/index.css" />
+
     <title>One Click URL</title>
-
-    <style>
-      body {
-        background-color: #263238;
-        color: white;
-      }
-
-      .main-container {
-        max-width: 45em;
-      }
-
-      .nav-link-btn {
-        background: #f7f7f7;
-        color: black;
-        border-radius: 3px;
-        margin-left: 0.5em;
-      }
-
-      .nav-link-btn:hover {
-        background: #dedede;
-        color: black;
-        border-radius: 3px;
-        margin-left: 0.5em;
-      }
-
-      .editor-container {
-        margin-bottom: 3em;
-        max-width: 100%;
-      }
-
-      pre {
-        display: inline;
-      }
-
-      footer {
-        padding-bottom: 1em;
-      }
-    </style>
   </head>
 
   <body>
@@ -118,7 +82,7 @@
         </div>
       </div>
 
-      <hr style="background-color: white" />
+      <hr class="hr-white" />
 
       <div id="example" class="row editor-container">
         <div class="col-12">
@@ -210,25 +174,14 @@
     ></script>
 
     <!-- Syntax Highlighting -->
-    <link rel="stylesheet" href="//ocurl.io/vendor/dracula.css" />
+    <link rel="stylesheet" href="/vendor/dracula.css" />
     <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.2/build/highlight.min.js"></script>
-    <script>
-      hljs.initHighlightingOnLoad();
-    </script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script
       async
       src="//www.googletagmanager.com/gtag/js?id=UA-148475828-3"
     ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag('config', 'UA-148475828-3');
-    </script>
+    <script src="/script/index.js"></script>
   </body>
 </html>

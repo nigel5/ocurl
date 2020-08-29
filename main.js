@@ -82,7 +82,23 @@ redisClient.on('connect', function () {
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          '*.bootstrapcdn.com',
+          '*.googletagmanager.com',
+          '*.jsdelivr.net',
+          'code.jquery.com',
+        ],
+        styleSrc: ["'self'", '*.bootstrapcdn.com'],
+      },
+    },
+  })
+);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(withCaching(redisClient));
 app.use(withMapping(cassandraClient, redisClient));
