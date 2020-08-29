@@ -87,12 +87,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'*.bootstrapcdn.com'",
-          "'*.googletagmanager.com'",
-          "'*.jsdelivr.net'",
-          "'code.jquery.com'",
+        scriptSrc: ["'self'"],
+        scriptSrcElem: [
+          '*.bootstrapcdn.com',
+          '*.googletagmanager.com',
+          '*.jsdelivr.net',
+          'code.jquery.com',
         ],
       },
     },
