@@ -2,7 +2,7 @@ FROM node:14
 
 ENV DOCKER true
 
-ENV DEBUG=*
+ENV DEBUG=middleware:*,app:*
 
 WORKDIR /usr/src/ocurl
 

@@ -1,5 +1,5 @@
 document.onload = function () {
-  hljs.initHighlightingOnLoad();
+  hljs.initHighlighting();
 
   window.dataLayer = window.dataLayer || [];
   function gtag() {
