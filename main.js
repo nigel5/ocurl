@@ -12,18 +12,20 @@ const withCaching = require('./middleware/withCaching');
 const withLogging = require('./middleware/withLogging');
 const withRateLimiter = require('./middleware/withRateLimiter');
 
+const d = require('debug')('app:main');
+
 /**
  * Global application settings are exported here
  */
 let settings;
 if (process.env.DOCKER) {
-  console.log('(DOCKER)');
+  d('(DOCKER)');
   settings = require('./ocurl.conf.docker.json');
 } else if (process.env.NODE_ENV && process.env.NODE_ENV === 'production') {
-  console.log('(PRODUCTION)');
+  d('(PRODUCTION)');
   settings = require('./ocurl.conf.prod.json');
 } else {
-  console.log('(DEVELOPMENT)');
+  d('(DEVELOPMENT)');
   settings = require('./ocurl.conf.dev.json');
 }
 module.exports.settings = settings;
@@ -49,36 +51,53 @@ const cassandraClient = new cassandra.Client({
 });
 cassandraClient.connect(async function (err) {
   if (err) {
-    console.log(`Error occured when connecting to database ${err}`);
+    d(`Error occured when connecting to database ${err}`);
     process.exit(1);
   } else {
     await cassandraClient.execute(INIT_KEYSPACE, []);
     await cassandraClient.execute('USE ocurl');
     await cassandraClient.execute(INIT_URL_MAPPING, []);
     await cassandraClient.execute(INIT_INDEX, []);
-    console.log(
-      `Connected to Cassandra db at ${settings.cassandra.contactPoints}`
-    );
+    d(`Connected to Cassandra db at ${settings.cassandra.contactPoints}`);
   }
 });
 
 /**
  * Cache connection
  */
+//#region cache
 const redisClient = redis.createClient(
   settings.redis.port,
   settings.redis.hostname
 );
+// 0 : Not connected
+// 1 : Connected
+
+var redisConnectionStatus = 0;
+module.exports.redisConnectionStatus = () => redisConnectionStatus;
+
 redisClient.on('error', function (err) {
-  console.error('Redis Error occured', err);
-  console.info('Attempting to reconnect Redis');
+  redisConnectionStatus = 0;
+  d('Redis Error occured', err);
+  d('Attempting to reconnect Redis', redisConnectionStatus);
 });
 
 redisClient.on('connect', function () {
-  console.info(
-    `Connected to Redis at ${settings.redis.hostname}:${settings.redis.post}`
-  );
+  redisConnectionStatus = 1;
+  d(`Connected to Redis at ${settings.redis.hostname}:${settings.redis.post}`);
 });
+
+redisClient.on('ready', function () {
+  redisConnectionStatus = 1;
+  d(`Redis is ready ${settings.redis.hostname}:${settings.redis.post}`);
+});
+
+redisClient.on('end', function () {
+  redisConnectionStatus = 0;
+  d(`Redis connected ended ${settings.redis.hostname}:${settings.redis.post}`);
+});
+
+//#endregion
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -110,7 +129,7 @@ app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
 
 app.listen(port, settings.hostname, () => {
-  console.log(`One Click URL (ocurl) server started on port ${port}`);
+  d(`One Click URL (ocurl) server started on port ${port}`);
 });
 
 /**

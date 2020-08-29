@@ -1,5 +1,6 @@
 const { RedisClient } = require('redis');
 const { errResponse } = require('../util/responses');
+const d = require('debug')('middleware:xratelim');
 
 /**
  * API Rate Limiter
@@ -24,15 +25,17 @@ module.exports = function (redisClient) {
   const rateLimitResetTime =
     process.env.RATE_LIMIT_RESET_TIME || settings.rate_limit_expire_time;
 
+  d('Initialized middleware');
+
   router.get('/api/v1/*', function (req, res, next) {
     const currentIpKey = `xRateLim::${req.ip}`;
 
     redisClient.llen(currentIpKey, function (err, reply) {
       if (err) {
-        console.error('Error in rate limiter. Rate limiter is bypassed.', e);
+        d('Error in rate limiter. Rate limiter has been bypassed', e);
         return next();
       } else if (reply != null && reply > rateLimit) {
-        console.log('Rate limit reached for', req.ip, rateLimitResetTime);
+        req.log.info('Rate limit reached for the client of this request');
         return res.status(429).send(errResponse(true, 'Too many requests'));
       } else {
         redisClient.exists(currentIpKey, function (err, exists) {
@@ -44,7 +47,7 @@ module.exports = function (redisClient) {
               ])
               .exec(function (err, reply) {
                 if (err) {
-                  console.error('Error in rate limiter.', err, reply);
+                  d('Error in rate limiter. Rate limiter has been bypassed', e);
                 }
               });
           } else {

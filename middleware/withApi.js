@@ -1,4 +1,5 @@
 const { Client } = require('cassandra-driver');
+const d = require('debug')('middleware:api');
 
 /**
  * Public API for One Click Shorten
@@ -26,6 +27,8 @@ module.exports = function (cassandraClient, redisClient) {
   const baseURL = process.env.BASE_URL || settings.base_url;
   const cacheExpireTime =
     process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
+
+  d('Initialized middleware');
 
   /**
    * Get a short url
@@ -79,8 +82,8 @@ module.exports = function (cassandraClient, redisClient) {
     try {
       redisClient.set(letters, originalUrl, 'EX', cacheExpireTime);
     } catch (e) {
-      console.warn('Cache is offline');
-      console.error(e);
+      d('Cache is offline');
+      d(e);
     }
 
     // Save in perm database for long term
@@ -129,7 +132,7 @@ module.exports = function (cassandraClient, redisClient) {
         return res.send(responses.dataResponse(result));
       }
     } catch (e) {
-      console.log("Error in router.get('/api/v1/decode...", e);
+      d("Error in router.get('/api/v1/decode...", e);
       return res.status(500).send(responses.internalErrResponse());
     }
   });
@@ -144,6 +147,7 @@ module.exports = function (cassandraClient, redisClient) {
      */
     if (redisClient) {
       redisClient.set('healthCheckZZZ', '_', 'EX', '1', function (err, reply) {
+        // Test key
         if (reply) {
           /**
            * Database

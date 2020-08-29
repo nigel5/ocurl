@@ -1,5 +1,6 @@
 const { Client } = require('cassandra-driver');
 const { RedisClient } = require('redis');
+const d = require('debug')('middleware:mapping');
 
 /**
  * Inject from_url and to_url to headers
@@ -19,6 +20,8 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
   const cacheExpireTime =
     process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
 
+  d('Initialized middleware');
+
   /**
    * Return the key if it already exists for this destination
    * @param {string} fromUrl The short url
@@ -37,7 +40,7 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
       result = result.first();
       return result.from_key;
     } catch (e) {
-      console.log('Error in getExistingShortUrl', e);
+      d('Error in getExistingShortUrl', e);
       return false;
     }
   }
@@ -97,11 +100,11 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
       try {
         redisClient.set(letters, result.to_url, 'EX', cacheExpireTime);
       } catch (e) {
-        console.warn('Cache is offline');
-        console.error(e);
+        d('Cache is offline');
+        d(e);
       }
     } catch (e) {
-      console.log('Error in withMapping, /*', e);
+      d('Error in withMapping, /*', e);
       req.existingMapping = false;
       return next();
     }

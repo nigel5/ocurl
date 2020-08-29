@@ -5,13 +5,17 @@
  */
 module.exports = function (app) {
   const router = require('express').Router();
+  const d = require('debug')('middleware:log');
+  const n = require('debug')('app:network');
+
+  d('Initialized middleware');
 
   /**
    * Response
    */
   app.use(function (req, res, next) {
     res.on('finish', function () {
-      console.log(`${res.statusCode} ${req.originalUrl} ${req.ip}`);
+      n(`${res.statusCode} ${req.originalUrl} ${req.ip}`);
     });
     return next();
   });
@@ -20,7 +24,7 @@ module.exports = function (app) {
    * Request
    */
   router.all('*', function (req, res, next) {
-    console.log(`${req.method} ${req.originalUrl} ${req.ip}`);
+    n(`${req.method} ${req.originalUrl} ${req.ip}`);
     return next();
   });
 
