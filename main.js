@@ -87,8 +87,8 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        scriptSrcElem: [
+        scriptSrc: [
+          "'self'",
           '*.bootstrapcdn.com',
           '*.googletagmanager.com',
           '*.jsdelivr.net',
