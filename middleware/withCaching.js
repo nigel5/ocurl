@@ -4,10 +4,16 @@ const redis = require('redis');
 /**
  * Redis cache layer
  * @param {RedisClient} redisClient The Redis client instance to execute commands on
+ *
+ * Settings
+ *  CACHE_EXPIRE_TIME
  */
 module.exports = function (redisClient) {
   const router = require('express').Router();
   const settings = require('../main').settings;
+
+  const cacheExpireTime =
+    process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
 
   router.get('/:key', async function (req, res, next) {
     // Attempt to retrieve value from cache
@@ -28,7 +34,7 @@ module.exports = function (redisClient) {
           toUrl: reply,
         };
 
-        redisClient.expire(req.params.key, settings.redis.expireTime);
+        redisClient.expire(req.params.key, cacheExpireTime);
       }
       next();
     });

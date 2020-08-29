@@ -3,6 +3,12 @@ const { Client } = require('cassandra-driver');
 /**
  * Public API for One Click Shorten
  * @param {Client} cassandraClient Client to execute commands on
+ *
+ * Settings:
+ *  GENERATED_PATH_LENGTH
+ *  MAX_PATH_LENGTH
+ *  BASE_URL
+ *  CACHE_EXPIRE_TIME
  */
 module.exports = function (cassandraClient, redisClient) {
   const router = require('express').Router();
@@ -18,6 +24,8 @@ module.exports = function (cassandraClient, redisClient) {
     process.env.GENERATED_PATH_LENGTH || settings.generated_path_length;
   const maxPathLength = process.env.MAX_PATH_LENGTH || settings.max_path_length;
   const baseURL = process.env.BASE_URL || settings.base_url;
+  const cacheExpireTime =
+    process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
 
   /**
    * Get a short url
@@ -69,7 +77,7 @@ module.exports = function (cassandraClient, redisClient) {
 
     // Save url in cache
     try {
-      redisClient.set(letters, originalUrl, 'EX', settings.redis.expireTime);
+      redisClient.set(letters, originalUrl, 'EX', cacheExpireTime);
     } catch (e) {
       console.warn('Cache is offline');
       console.error(e);

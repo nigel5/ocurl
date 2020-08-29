@@ -5,11 +5,19 @@ const { RedisClient } = require('redis');
  * Inject from_url and to_url to headers
  * @param {Client} cassandraClient Client to execute commands on
  * @param {RedisClient} redisClient Client to execute cache commands on
+ *
+ * Settings
+ *  BASE_URL
+ *  CACHE_EXPIRE_TIME
  */
 module.exports.withMapping = function (cassandraClient, redisClient) {
   const router = require('express').Router();
   const statements = require('../util/database/statements');
   const settings = require('../main').settings;
+
+  const baseUrl = process.env.BASE_URL || settings.base_url;
+  const cacheExpireTime =
+    process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
 
   /**
    * Return the key if it already exists for this destination
@@ -48,7 +56,7 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
 
       if (a) {
         req.existingMapping = {
-          fromUrl: `${settings.base_url}/${a}`,
+          fromUrl: `${baseUrl}/${a}`,
           toUrl: originalUrl,
         };
       } else {
@@ -87,12 +95,7 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
 
       // Add to cache / extend time
       try {
-        redisClient.set(
-          letters,
-          result.to_url,
-          'EX',
-          settings.redis.expireTime
-        );
+        redisClient.set(letters, result.to_url, 'EX', cacheExpireTime);
       } catch (e) {
         console.warn('Cache is offline');
         console.error(e);

@@ -3,13 +3,15 @@
   "generated_path_length": 5,
   "max_path_length": 12,
   "unknown_redirect": "localhost:3000",
+  "rate_limit": 5,
+  "rate_limit_expire_time": 10,
+  "cache_expire_time": 86400,
   "cassandra": {
     "contactPoints": ["localhost"],
     "localDataCenter": "datacenter1"
   },
   "redis": {
     "hostname": "localhost",
-    "post": 6379,
-    "expireTime": 86400
+    "post": 6379
   }
 }

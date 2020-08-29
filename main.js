@@ -10,6 +10,7 @@ const withApi = require('./middleware/withApi');
 const withRedirects = require('./middleware/withRedirects');
 const withCaching = require('./middleware/withCaching');
 const withLogging = require('./middleware/withLogging');
+const withRateLimiter = require('./middleware/withRateLimiter');
 
 /**
  * Global application settings are exported here
@@ -99,10 +100,12 @@ app.use(
     },
   })
 );
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(withCaching(redisClient));
 app.use(withMapping(cassandraClient, redisClient));
 app.use(withLogging);
+app.use(withRateLimiter(redisClient));
 app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
 
