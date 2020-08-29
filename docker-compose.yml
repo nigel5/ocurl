@@ -23,6 +23,8 @@ services:
     volumes:
       - './scripts/cassandra-init.sh:/cassandra-init.sh'
     command: 'sh /cassandra-init.sh'
+    environment:
+      - CASSANDRA_CLUSTER_NAME=ocurl.io
   ocurl:
     build: .
     ports:

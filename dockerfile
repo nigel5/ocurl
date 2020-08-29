@@ -2,6 +2,8 @@ FROM node:14
 
 ENV DOCKER true
 
+ENV DEBUG=*
+
 WORKDIR /usr/src/ocurl
 
 COPY package*.json ./
