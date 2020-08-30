@@ -34,11 +34,11 @@ An error response is the following structure
 }
 ```
 
-| Method | Endpoint       | Query parameters?                | Description                               |
-| ------ | -------------- | -------------------------------- | ----------------------------------------- |
-| GET    | /api/v1/url    | `q` {string} The destination url | Get a short url for destination `q`       |
-| GET    | /api/v1/decode | `q` {string} The short url       | Get destination for short url or key `q`. |
-| ANY    | /api/v1/health | none                             | Server health [ok 200,unavailable 500]    |
+| Method | Endpoint       | Query parameters?                    | Description                               |
+| ------ | -------------- | ------------------------------------ | ----------------------------------------- |
+| GET    | /api/v1/url    | `q` {string} A valid destination url | Get a short url for destination `q`       |
+| GET    | /api/v1/decode | `q` {string} The short url           | Get destination for short url or key `q`. |
+| ANY    | /api/v1/health | none                                 | Server health [ok 200,unavailable 500]    |
 
 ### Example
 

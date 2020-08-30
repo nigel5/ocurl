@@ -28,6 +28,8 @@ module.exports = function (cassandraClient, redisClient) {
   const cacheExpireTime =
     process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
 
+  const url = require('url');
+
   d('Initialized middleware');
 
   /**
@@ -48,6 +50,20 @@ module.exports = function (cassandraClient, redisClient) {
 
     const originalUrl = req.query.q;
     const pathLength = req.query.length || defaultPathLength;
+
+    // Test if valid url
+    try {
+      new URL(originalUrl);
+    } catch (e) {
+      return res
+        .status(400)
+        .send(
+          responses.errResponse(
+            true,
+            `Provided URL is invalid. Do you have the protocol prepended?`
+          )
+        );
+    }
 
     if (pathLength < 1 || pathLength > maxPathLength) {
       return res
