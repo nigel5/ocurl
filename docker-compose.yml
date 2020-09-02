@@ -21,10 +21,12 @@ services:
       timeout: 5m
       retries: 10
     volumes:
+      - './data/cassandra:/var/lib/cassandra'
       - './scripts/cassandra-init.sh:/cassandra-init.sh'
     command: 'sh /cassandra-init.sh'
     environment:
       - CASSANDRA_CLUSTER_NAME=ocurl.io
+    restart: always
   ocurl:
     build: .
     ports:
