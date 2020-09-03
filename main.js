@@ -29,6 +29,7 @@ if (process.env.DOCKER) {
   settings = require('./ocurl.conf.dev.json');
 }
 module.exports.settings = settings;
+global.__PROJECT_PATH_ROOT = path.resolve(__dirname);
 
 const { withMapping } = require('./middleware/withMapping');
 const {
