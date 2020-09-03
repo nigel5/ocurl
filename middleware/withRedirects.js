@@ -7,6 +7,7 @@
 module.exports = function () {
   const router = require('express').Router();
   const a = require('debug')('middleware:redirects');
+  const path = require('path');
 
   const defaultRedirectUrl =
     process.env.DEFAULT_REDIRECT_URL ||
@@ -16,6 +17,16 @@ module.exports = function () {
    * Redirect user to decoded url
    */
   router.get('/:key', async function (req, res, next) {
+    // Confused with static files?
+    if (!req.existingMapping && req.path === '/privacy-policy') {
+      res
+        .status(200)
+        .sendFile(
+          path.join(__PROJECT_PATH_ROOT, 'public', 'privacy-policy.html')
+        );
+      return;
+    }
+
     if (req.existingMapping) {
       a(
         `Redirecting client ${req.ip} ${req.originalUrl} -> ${req.existingMapping.toUrl}`

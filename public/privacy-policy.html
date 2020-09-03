@@ -59,104 +59,51 @@
       href="https://ocurl.io/css/index.css"
     />
 
-    <title>One Click URL</title>
+    <title>One Click URL - Privacy Policy</title>
   </head>
 
   <body>
     <header class="main-container container">
       <div class="row">
         <div class="col">
-          <h3>Ocurl</h3>
+          <h3><a href="https://ocurl.io" class="nav-brand-link">Ocurl</a></h3>
         </div>
       </div>
     </header>
     <main class="main-container container mt-5 mb-5">
       <div class="row justify-content-center">
         <div class="col-12">
-          <h1 class="display-2 text-center">Ocurl</h1>
+          <h1 class="display-2 text-center">Privacy Policy</h1>
         </div>
       </div>
 
       <div class="row justify-content-center">
         <div class="col-12">
-          <p class="text-center">
-            Ocurl (prononced <i>oh-curl</i>), the URL shortener REST API
-          </p>
-          <p class="text-center">
-            Now available as a Chrome Extension and Discord Bot
-          </p>
-        </div>
-      </div>
-
-      <hr class="hr-white" />
-
-      <div id="example" class="row editor-container">
-        <div class="col-12">
-          <h2>Example</h2>
-          <p>Get a shortened url for https://github.com</p>
-          <pre><code class="javascript">fetch('https://ocurl.io/api/v1/url?q=https://github.com')
-  .then((res) => res.json())
-  .then((json) => console.log(json));
-// Output:
-// {
-//   "data": {
-//     "url": "ocurl.io/ou6p1"
-//   }
-// }</code></pre>
-        </div>
-      </div>
-
-      <div id="resources" class="row">
-        <div class="col-12">
-          <h2>Resources</h2>
           <p>
-            There are only two possible response types from the service. Data or
-            error.
+            <b
+              >REST API, Chrome Extension (1 Click URL), Discord Bot (Hosted by
+              ocurl.io)</b
+            >
           </p>
-          <pre><code class="javascript">// Data response
-{
-  "data": Object
-}
-
-// Error response
-{
-  "err": Object,
-  "message": string
-}</code></pre>
+          <p>
+            The only thing I store are your submitted links. Nothing else.
+            Period. I literally don't have any physical server space to store
+            other data. No data is sold. A donation would be nice.
+          </p>
         </div>
-      </div>
-
-      <div id="api" class="row">
         <div class="col-12">
-          <h2>Available endpoints</h2>
-          <div>
-            <p>Get a short URL</p>
-            <pre><code class="md">GET /api/v1/url
-            Query Parameters
-              - q {string} The destination URL
-                      </code></pre>
-          </div>
-
-          <div>
-            <p>Decode a short url or path</p>
-            <pre><code class="md">GET /api/v1/decode
-            Query Parameters
-              - q {string} The short URL or path
-                      </code></pre>
-          </div>
-
-          <div>
-            <p>System status check</p>
-            <pre><code class="md">GET /api/v1/health
-            Query Parameters
-              none
-                      </code></pre>
-          </div>
+          <p>
+            <b>Google Analytics Notice</b>
+          </p>
+          <p>
+            This website, and the Chrome Extension (published as "1 Click URL")
+            uses "Google Analytics" to help me understand how I can make this
+            product better.
+          </p>
         </div>
       </div>
       <hr class="hr-white" />
     </main>
-
     <footer class="main-container container">
       <div class="row justify-content-center">
         <div class="col-4 text-center">

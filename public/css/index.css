@@ -21,6 +21,16 @@ body {
   margin-left: 0.5em;
 }
 
+.nav-brand-link {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+.footer-link {
+  text-decoration: none !important;
+  color: inherit;
+}
+
 .editor-container {
   margin-bottom: 3em;
   max-width: 100%;
