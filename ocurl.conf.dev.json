@@ -7,6 +7,7 @@
   "rate_limit_expire_time": 10,
   "cache_expire_time": 86400,
   "default_redirect_url": "http://0.0.0.0:3000/",
+  "trust_proxy": false,
   "cassandra": {
     "contactPoints": ["localhost"],
     "localDataCenter": "datacenter1"

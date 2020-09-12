@@ -136,6 +136,8 @@ app.use(withMapping(cassandraClient, redisClient));
 app.use(withApi(cassandraClient, redisClient));
 app.use(withRedirects());
 
+app.enable('trust proxy', settings.trust_proxy);
+
 app.listen(port, settings.hostname, () => {
   d(`One Click URL (ocurl) server started on port ${port}`);
 });
