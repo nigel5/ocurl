@@ -20,6 +20,7 @@ module.exports = function (cassandraClient, redisClient) {
   const settings = require('../main').settings;
   const statements = require('../util/database/statements');
   const shortUrlDecoder = require('../util/keyDecoder');
+  const getUrlFromKey = require('../util/generation').getUrlFromKey;
 
   const defaultPathLength =
     process.env.GENERATED_PATH_LENGTH || settings.generated_path_length;
@@ -85,7 +86,7 @@ module.exports = function (cassandraClient, redisClient) {
         .send(responses.errResponse(true, 'You must provide a url to shorten'));
     }
 
-    const shortUrl = `${baseURL}/${letters}`;
+    const shortUrl = getUrlFromKey(letters);
     const requesterIp = req.ip;
 
     res.send(

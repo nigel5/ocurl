@@ -1,5 +1,6 @@
 const { Client } = require('cassandra-driver');
 const statements = require('./database/statements');
+const getUrlFromKey = require('./generation').getUrlFromKey;
 const settings = require('../main').settings;
 
 /**
@@ -16,6 +17,8 @@ const settings = require('../main').settings;
  * @returns {Result} result
  */
 module.exports = async function (cassandraClient, key) {
+  const settings = require('../main').settings;
+
   let result = await cassandraClient.execute(
     statements.SELECT_URL_MAPPING_FROM_KEY,
     [key]
@@ -28,7 +31,7 @@ module.exports = async function (cassandraClient, key) {
   result = result.first();
 
   return {
-    fromUrl: `${settings.base_url}/${result.from_key}`,
+    fromUrl: getUrlFromKey(result.from_key),
     toUrl: result.to_url,
   };
 };

@@ -15,6 +15,7 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
   const router = require('express').Router();
   const statements = require('../util/database/statements');
   const settings = require('../main').settings;
+  const getUrlFromKey = require('../util/generation').getUrlFromKey;
 
   const baseUrl = process.env.BASE_URL || settings.base_url;
   const cacheExpireTime =
@@ -60,7 +61,7 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
 
       if (a) {
         req.existingMapping = {
-          fromUrl: `${baseUrl}/${a}`,
+          fromUrl: getUrlFromKey(a),
           toUrl: originalUrl,
         };
       } else {

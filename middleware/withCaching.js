@@ -12,6 +12,7 @@ module.exports = function (redisClient) {
   const router = require('express').Router();
   const settings = require('../main').settings;
   const redisStatus = require('../main').redisConnectionStatus;
+  const getUrlFromKey = require('../util/generation').getUrlFromKey;
 
   const cacheExpireTime =
     process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
@@ -38,7 +39,7 @@ module.exports = function (redisClient) {
         } else if (reply === null) {
           resolve(false);
         } else {
-          const fromUrl = `${settings.base_url}/${key}`;
+          const fromUrl = getUrlFromKey(key);
 
           redisClient.expire(key, cacheExpireTime);
           resolve({

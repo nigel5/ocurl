@@ -1,3 +1,5 @@
+const settings = require('../main').settings;
+
 /**
  * Possible characters to use when generating a string
  */
@@ -19,7 +21,7 @@ function getRandomInt(min, max) {
  * Generate random string of given length
  * @param {number} len Length of url to be returned
  */
-function rollStr (len) {
+function rollStr(len) {
   let res = '';
   const min = 0;
   const max = ALL_CHAR.length - 1;
@@ -32,3 +34,13 @@ function rollStr (len) {
 }
 
 module.exports.rollStr = rollStr;
+
+/**
+ * Return a URL for this deployment from a key
+ * @param {string} key The letters at the end of the url
+ */
+function getUrlFromKey(key) {
+  return `${settings.default_protocol}://${settings.base_url}/${key}`;
+}
+
+module.exports.getUrlFromKey = getUrlFromKey;
