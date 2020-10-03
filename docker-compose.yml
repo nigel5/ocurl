@@ -24,11 +24,6 @@ services:
     links:
       - postgres
     restart: always
-    healthcheck:
-      test: ['CMD', 'curl -f', 'localhost:3000/api/v1/health']
-      interval: 5s
-      timeout: 1m
-      retries: 10
     environment:
       - PORT=3000
       - PGUSER=ocurl_d
