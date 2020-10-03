@@ -143,15 +143,20 @@
         <div class="col-12">
           <h2>Available endpoints</h2>
           <div>
-            <p>Get a short URL</p>
+            <p>
+              Get a short URL <small><b>(Rate limited)</b></small>
+            </p>
             <pre><code class="md">GET /api/v1/url
             Query Parameters
               - q {string} The destination URL
+              - l {number} Length of the desired url path
                       </code></pre>
           </div>
 
           <div>
-            <p>Decode a short url or path</p>
+            <p>
+              Decode a short url or path <small><b>(Rate limited)</b></small>
+            </p>
             <pre><code class="md">GET /api/v1/decode
             Query Parameters
               - q {string} The short URL or path
@@ -159,7 +164,9 @@
           </div>
 
           <div>
-            <p>System status check</p>
+            <p>
+              System status check <small><b>(Rate limited)</b></small>
+            </p>
             <pre><code class="md">GET /api/v1/health
             Query Parameters
               none
