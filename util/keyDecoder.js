@@ -1,5 +1,5 @@
-const { Client } = require('cassandra-driver');
-const statements = require('./database/statements');
+const { Pool } = require('pg');
+const statements = require('./database/statements2');
 const getUrlFromKey = require('./generation').getUrlFromKey;
 const settings = require('../main').settings;
 
@@ -11,24 +11,23 @@ const settings = require('../main').settings;
 
 /**
  * Retrieve information about a key
- * @param {Client} cassandraClient Client to execute commands on
+ * @param {Pool} pgPool Client to execute commands on
  * @param {string} key The key to decode
  *
  * @returns {Result} result
  */
-module.exports = async function (cassandraClient, key) {
+module.exports = async function (pgPool, key) {
   const settings = require('../main').settings;
 
-  let result = await cassandraClient.execute(
-    statements.SELECT_URL_MAPPING_FROM_KEY,
-    [key]
-  );
+  let result = await pgPool.query(statements.SELECT_URL_MAPPING_FROM_KEY, [
+    key,
+  ]);
 
-  if (result.rowLength < 1) {
+  if (result.rows.length < 1) {
     return false;
   }
 
-  result = result.first();
+  result = result.rows[0];
 
   return {
     fromUrl: getUrlFromKey(result.from_key),

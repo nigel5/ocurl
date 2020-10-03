@@ -4,7 +4,7 @@ const path = require('path');
 
 const express = require('express');
 const redis = require('redis');
-const cassandra = require('cassandra-driver');
+const { Pool } = require('pg');
 
 const withApi = require('./middleware/withApi');
 const withRedirects = require('./middleware/withRedirects');
@@ -32,34 +32,18 @@ module.exports.settings = settings;
 global.__PROJECT_PATH_ROOT = path.resolve(__dirname);
 
 const { withMapping } = require('./middleware/withMapping');
-const {
-  INIT_KEYSPACE,
-  INIT_URL_MAPPING,
-  INIT_INDEX,
-} = require('./util/database/statements');
+const { INIT_URL_MAPPING } = require('./util/database/statements2');
 const helmet = require('helmet');
 
 /**
  * Database connection
  */
-const cassandraClient = new cassandra.Client({
-  policies: {
-    reconnection: new cassandra.policies.reconnection.ConstantReconnectionPolicy(
-      5
-    ),
-  },
-  ...settings.cassandra,
-});
-cassandraClient.connect(async function (err) {
+const pgPool = new Pool();
+pgPool.query(INIT_URL_MAPPING, (err, res) => {
   if (err) {
-    d(`Error occured when connecting to database ${err}`);
-    process.exit(1);
+    console.log('Failed to connect to postgreSQL', err);
   } else {
-    await cassandraClient.execute(INIT_KEYSPACE, []);
-    await cassandraClient.execute('USE ocurl');
-    await cassandraClient.execute(INIT_URL_MAPPING, []);
-    await cassandraClient.execute(INIT_INDEX, []);
-    d(`Connected to Cassandra db at ${settings.cassandra.contactPoints}`);
+    console.log('Connected to postgreSQL');
   }
 });
 
@@ -132,14 +116,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(withLogging(app));
 app.use(withRateLimiter(redisClient));
 app.use(withCaching(redisClient));
-app.use(withMapping(cassandraClient, redisClient));
-app.use(withApi(cassandraClient, redisClient));
+app.use(withMapping(pgPool, redisClient));
+app.use(withApi(pgPool, redisClient));
 app.use(withRedirects());
 
 app.enable('trust proxy', settings.trust_proxy);
 
 app.listen(port, settings.hostname, () => {
   d(`One Click URL (ocurl) server started on port ${port}`);
+});
+
+process.on('exit', () => {
+  pgPool.end();
 });
 
 /**

@@ -1,4 +1,4 @@
-const { Client } = require('cassandra-driver');
+const { Pool } = require('pg');
 const d = require('debug')('middleware:api');
 
 /**
@@ -11,14 +11,14 @@ const d = require('debug')('middleware:api');
  *  BASE_URL
  *  CACHE_EXPIRE_TIME
  */
-module.exports = function (cassandraClient, redisClient) {
+module.exports = function (pgPool, redisClient) {
   const router = require('express').Router();
   const LocalDate = require('cassandra-driver').types.LocalDate;
 
   const responses = require('../util/responses');
   const rollStr = require('../util/generation').rollStr;
   const settings = require('../main').settings;
-  const statements = require('../util/database/statements');
+  const statements = require('../util/database/statements2');
   const shortUrlDecoder = require('../util/keyDecoder');
   const getUrlFromKey = require('../util/generation').getUrlFromKey;
 
@@ -104,11 +104,11 @@ module.exports = function (cassandraClient, redisClient) {
     }
 
     // Save in perm database for long term
-    cassandraClient.execute(statements.INSERT_URL_MAPPING, [
+    pgPool.query(statements.INSERT_URL_MAPPING, [
       letters,
       originalUrl,
-      LocalDate.now(),
       requesterIp,
+      LocalDate.now(),
     ]);
   });
 
@@ -139,7 +139,7 @@ module.exports = function (cassandraClient, redisClient) {
     }
 
     try {
-      const result = await shortUrlDecoder(cassandraClient, q);
+      const result = await shortUrlDecoder(pgPool, q);
 
       if (!result) {
         return res
@@ -157,30 +157,32 @@ module.exports = function (cassandraClient, redisClient) {
   /**
    * Health Check
    */
-  router.all('/api/v1/health', function (req, res) {
-    const cassandraState = cassandraClient.getState();
+  router.all('/api/v1/health', async function (req, res) {
     /**
-     * Cache
+     * Test Cache
      */
     if (redisClient) {
-      redisClient.set('healthCheckZZZ', '_', 'EX', '1', function (err, reply) {
+      redisClient.set('healthCheckZZZ', '_', 'EX', '1', async function (
+        err,
+        reply
+      ) {
         // Test key
         if (reply) {
           /**
-           * Database
+           * Test Database
            */
-          if (
-            cassandraState._openConnections &&
-            Object.keys(cassandraState._openConnections).length > 0
-          ) {
-            res.status(200).send('ok');
+          try {
+            await pgPool.query(statements.HEALTH_CHECK);
+            return res.status(200).send('OK');
+          } catch (e) {
+            return res.status(503).send('503 Service Unavailable');
           }
         } else {
           return res.status(503).send('unavailable');
         }
       });
     } else {
-      res.status(503).send('unavailable');
+      res.status(503).send('503 Service Unavailable');
     }
   });
 
