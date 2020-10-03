@@ -13,7 +13,6 @@ const d = require('debug')('middleware:api');
  */
 module.exports = function (pgPool, redisClient) {
   const router = require('express').Router();
-  const LocalDate = require('cassandra-driver').types.LocalDate;
 
   const responses = require('../util/responses');
   const rollStr = require('../util/generation').rollStr;
@@ -104,12 +103,16 @@ module.exports = function (pgPool, redisClient) {
     }
 
     // Save in perm database for long term
-    pgPool.query(statements.INSERT_URL_MAPPING, [
-      letters,
-      originalUrl,
-      requesterIp,
-      LocalDate.now(),
-    ]);
+    try {
+      pgPool.query(statements.INSERT_URL_MAPPING, [
+        letters,
+        originalUrl,
+        requesterIp,
+        new Date(),
+      ]);
+    } catch (e) {
+      d('Database is down...');
+    }
   });
 
   /**

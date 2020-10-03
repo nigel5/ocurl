@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const statements = require('./database/statements2');
 const getUrlFromKey = require('./generation').getUrlFromKey;
 const settings = require('../main').settings;
+const d = require('debug')('util:decoder');
 
 /**
  * @typedef {Object} Result A url mapping result
@@ -19,9 +20,13 @@ const settings = require('../main').settings;
 module.exports = async function (pgPool, key) {
   const settings = require('../main').settings;
 
-  let result = await pgPool.query(statements.SELECT_URL_MAPPING_FROM_KEY, [
-    key,
-  ]);
+  try {
+    var result = await pgPool.query(statements.SELECT_URL_MAPPING_FROM_KEY, [
+      key,
+    ]);
+  } catch (e) {
+    d(e);
+  }
 
   if (result.rows.length < 1) {
     return false;

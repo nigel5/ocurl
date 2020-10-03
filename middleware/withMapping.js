@@ -24,26 +24,21 @@ module.exports.withMapping = function (pgPool, redisClient) {
   d('Initialized middleware');
 
   /**
-   * Return the key if it already exists for this destination
+   * Return the key if it already exists for this destination. Throws error if database connection is down.
    * @param {string} fromUrl The short url
    */
   async function getExistingMappingKey(toUrl) {
-    try {
-      let result = await pgPool.query(
-        statements.SELECT_URL_MAPPING_FROM_DEST_URL,
-        [toUrl]
-      );
+    let result = await pgPool.query(
+      statements.SELECT_URL_MAPPING_FROM_DEST_URL,
+      [toUrl]
+    );
 
-      if (result.rows.length < 1) {
-        return false;
-      }
-
-      result = result.rows[0];
-      return result.from_key;
-    } catch (e) {
-      d('Error in getExistingShortUrl', e);
+    if (result.rows.length < 1) {
       return false;
     }
+
+    result = result.rows[0];
+    return result.from_key;
   }
 
   router.get('/api/v1/url', async function (req, res, next) {
@@ -57,7 +52,13 @@ module.exports.withMapping = function (pgPool, redisClient) {
     const originalUrl = req.query.q;
 
     if (originalUrl) {
-      const a = await getExistingMappingKey(originalUrl);
+      try {
+        var a = await getExistingMappingKey(originalUrl);
+      } catch (e) {
+        d('Error in /api/v1/url', e);
+
+        return res.status(503).send('503 Service Unavailable'); // Don't invoke next middleware to stop creation of new urls if the database is down.
+      }
 
       if (a) {
         req.existingMapping = {
