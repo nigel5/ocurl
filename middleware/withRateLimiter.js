@@ -24,10 +24,17 @@ module.exports = function (redisClient) {
   const rateLimit = process.env.RATE_LIMIT || settings.rate_limit;
   const rateLimitResetTime =
     process.env.RATE_LIMIT_RESET_TIME || settings.rate_limit_expire_time;
+  const redisConnectionStatus = require('../main').redisConnectionStatus;
 
   d('Initialized middleware');
 
   router.get('/api/v1/*', function (req, res, next) {
+    // Rate lim is disabled
+    if (redisConnectionStatus() === 0) {
+      d('Rate limiter bypassed');
+      return next();
+    }
+
     const currentIpKey = `xRateLim::${req.ip}`;
 
     redisClient.llen(currentIpKey, function (err, reply) {

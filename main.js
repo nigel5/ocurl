@@ -32,20 +32,33 @@ module.exports.settings = settings;
 global.__PROJECT_PATH_ROOT = path.resolve(__dirname);
 
 const { withMapping } = require('./middleware/withMapping');
-const { INIT_URL_MAPPING } = require('./util/database/statements2');
+const {
+  INIT_URL_MAPPING,
+  HEALTH_CHECK,
+} = require('./util/database/statements2');
 const helmet = require('helmet');
 
 /**
  * Database connection
  */
 const pgPool = new Pool();
-pgPool.query(INIT_URL_MAPPING, (err, res) => {
-  if (err) {
-    console.log('Failed to connect to postgreSQL', err);
-  } else {
-    console.log('Connected to postgreSQL');
-  }
+
+// Run an intial query to test the pool
+pgPool.query(HEALTH_CHECK);
+
+var pgConnectionStatus = 0;
+pgPool.on('connect', (client) => {
+  d('Connection established to postgresql');
+  client.query(INIT_URL_MAPPING);
+  pgConnectionStatus = 1;
 });
+
+pgPool.on('error', (err) => {
+  d('Connection to postgresql lost', err);
+  pgConnectionStatus = 0;
+});
+
+module.exports.pgConnectionStatus = () => pgConnectionStatus;
 
 /**
  * Cache connection
@@ -59,12 +72,10 @@ const redisClient = redis.createClient(
 // 1 : Connected
 
 var redisConnectionStatus = 0;
-module.exports.redisConnectionStatus = () => redisConnectionStatus;
 
 redisClient.on('error', function (err) {
   redisConnectionStatus = 0;
   d('Redis Error occured', err);
-  d('Attempting to reconnect Redis', redisConnectionStatus);
 });
 
 redisClient.on('connect', function () {
@@ -82,6 +93,7 @@ redisClient.on('end', function () {
   d(`Redis connected ended ${settings.redis.hostname}:${settings.redis.post}`);
 });
 
+module.exports.redisConnectionStatus = () => redisConnectionStatus;
 //#endregion
 
 const app = express();

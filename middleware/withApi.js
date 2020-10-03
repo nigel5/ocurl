@@ -28,6 +28,9 @@ module.exports = function (pgPool, redisClient) {
   const cacheExpireTime =
     process.env.CACHE_EXPIRE_TIME || settings.cache_expire_time;
 
+  // Health
+  const { redisConnectionStatus, pgConnectionStatus } = require('../main');
+
   const url = require('url');
 
   d('Initialized middleware');
@@ -161,32 +164,38 @@ module.exports = function (pgPool, redisClient) {
    * Health Check
    */
   router.all('/api/v1/health', async function (req, res) {
-    /**
-     * Test Cache
-     */
-    if (redisClient) {
-      redisClient.set('healthCheckZZZ', '_', 'EX', '1', async function (
-        err,
-        reply
-      ) {
-        // Test key
-        if (reply) {
-          /**
-           * Test Database
-           */
-          try {
-            await pgPool.query(statements.HEALTH_CHECK);
-            return res.status(200).send('OK');
-          } catch (e) {
-            return res.status(503).send('503 Service Unavailable');
-          }
-        } else {
-          return res.status(503).send('unavailable');
-        }
-      });
+    // The overall service is still up as long as database is online.
+    if (pgConnectionStatus()) {
+      res.status(200).send('OK');
     } else {
       res.status(503).send('503 Service Unavailable');
     }
+    /**
+     * Test Cache
+     */
+    // if (redisClient) {
+    //   redisClient.set('healthCheckZZZ', '_', 'EX', '1', async function (
+    //     err,
+    //     reply
+    //   ) {
+    //     // Test key
+    //     if (reply) {
+    //       /**
+    //        * Test Database
+    //        */
+    //       try {
+    //         await pgPool.query(statements.HEALTH_CHECK);
+    //         return res.status(200).send('OK');
+    //       } catch (e) {
+    //         return res.status(503).send('503 Service Unavailable');
+    //       }
+    //     } else {
+    //       return res.status(503).send('unavailable');
+    //     }
+    //   });
+    // } else {
+    //   res.status(503).send('503 Service Unavailable');
+    // }
   });
 
   return router;
