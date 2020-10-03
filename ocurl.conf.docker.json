@@ -9,10 +9,6 @@
   "default_redirect_url": "https://ocurl.io",
   "default_protocol": "https",
   "trust_proxy": true,
-  "cassandra": {
-    "contactPoints": ["cassandra"],
-    "localDataCenter": "datacenter1"
-  },
   "redis": {
     "hostname": "redis",
     "post": 6379

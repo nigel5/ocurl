@@ -9,10 +9,6 @@
   "default_redirect_url": "http://0.0.0.0:3000/",
   "default_protocol": "http",
   "trust_proxy": false,
-  "cassandra": {
-    "contactPoints": ["localhost"],
-    "localDataCenter": "datacenter1"
-  },
   "redis": {
     "hostname": "localhost",
     "post": 6379
