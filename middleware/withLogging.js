@@ -14,9 +14,13 @@ module.exports = function (app) {
   d('Initialized middleware');
 
   let gcpLogger;
-  lw.express.makeMiddleware(logger, loggingWinston).then((middleware) => {
-    gcpLogger = middleware;
-  });
+
+  if (logger && loggingWinston) {
+    lw.express.makeMiddleware(logger, loggingWinston).then((middleware) => {
+      gcpLogger = middleware;
+    });
+    d('Initialized Stackdriver logging');
+  }
 
   /**
    * Response
@@ -25,6 +29,7 @@ module.exports = function (app) {
     res.on('finish', function () {
       n(`${res.statusCode} ${req.ip} ${req.originalUrl}`);
 
+      // Log to stackdriver if configured
       if (gcpLogger) {
         gcpLogger(req, res, next);
       }
