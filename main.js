@@ -4,7 +4,7 @@ const path = require('path');
 
 const express = require('express');
 const redis = require('redis');
-const cassandra = require('cassandra-driver');
+const { Pool } = require('pg');
 
 const withApi = require('./middleware/withApi');
 const withRedirects = require('./middleware/withRedirects');
@@ -33,35 +33,32 @@ global.__PROJECT_PATH_ROOT = path.resolve(__dirname);
 
 const { withMapping } = require('./middleware/withMapping');
 const {
-  INIT_KEYSPACE,
   INIT_URL_MAPPING,
-  INIT_INDEX,
-} = require('./util/database/statements');
+  HEALTH_CHECK,
+} = require('./util/database/statements2');
 const helmet = require('helmet');
 
 /**
  * Database connection
  */
-const cassandraClient = new cassandra.Client({
-  policies: {
-    reconnection: new cassandra.policies.reconnection.ConstantReconnectionPolicy(
-      5
-    ),
-  },
-  ...settings.cassandra,
+const pgPool = new Pool();
+
+// Run an intial query to test the pool
+pgPool.query(HEALTH_CHECK);
+
+var pgConnectionStatus = 0;
+pgPool.on('connect', (client) => {
+  d('Connection established to postgresql');
+  client.query(INIT_URL_MAPPING);
+  pgConnectionStatus = 1;
 });
-cassandraClient.connect(async function (err) {
-  if (err) {
-    d(`Error occured when connecting to database ${err}`);
-    process.exit(1);
-  } else {
-    await cassandraClient.execute(INIT_KEYSPACE, []);
-    await cassandraClient.execute('USE ocurl');
-    await cassandraClient.execute(INIT_URL_MAPPING, []);
-    await cassandraClient.execute(INIT_INDEX, []);
-    d(`Connected to Cassandra db at ${settings.cassandra.contactPoints}`);
-  }
+
+pgPool.on('error', (err) => {
+  d('Connection to postgresql lost', err);
+  pgConnectionStatus = 0;
 });
+
+module.exports.pgConnectionStatus = () => pgConnectionStatus;
 
 /**
  * Cache connection
@@ -75,12 +72,10 @@ const redisClient = redis.createClient(
 // 1 : Connected
 
 var redisConnectionStatus = 0;
-module.exports.redisConnectionStatus = () => redisConnectionStatus;
 
 redisClient.on('error', function (err) {
   redisConnectionStatus = 0;
   d('Redis Error occured', err);
-  d('Attempting to reconnect Redis', redisConnectionStatus);
 });
 
 redisClient.on('connect', function () {
@@ -98,6 +93,7 @@ redisClient.on('end', function () {
   d(`Redis connected ended ${settings.redis.hostname}:${settings.redis.post}`);
 });
 
+module.exports.redisConnectionStatus = () => redisConnectionStatus;
 //#endregion
 
 const app = express();
@@ -132,14 +128,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(withLogging(app));
 app.use(withRateLimiter(redisClient));
 app.use(withCaching(redisClient));
-app.use(withMapping(cassandraClient, redisClient));
-app.use(withApi(cassandraClient, redisClient));
+app.use(withMapping(pgPool, redisClient));
+app.use(withApi(pgPool, redisClient));
 app.use(withRedirects());
 
 app.enable('trust proxy', settings.trust_proxy);
 
 app.listen(port, settings.hostname, () => {
   d(`One Click URL (ocurl) server started on port ${port}`);
+});
+
+process.on('exit', () => {
+  pgPool.end();
 });
 
 /**

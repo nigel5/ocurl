@@ -1,19 +1,19 @@
-const { Client } = require('cassandra-driver');
+const { Pool } = require('pg');
 const { RedisClient } = require('redis');
 const d = require('debug')('middleware:mapping');
 
 /**
  * Inject from_url and to_url to headers
- * @param {Client} cassandraClient Client to execute commands on
+ * @param {Pool} pgPool Client to execute commands on
  * @param {RedisClient} redisClient Client to execute cache commands on
  *
  * Settings
  *  BASE_URL
  *  CACHE_EXPIRE_TIME
  */
-module.exports.withMapping = function (cassandraClient, redisClient) {
+module.exports.withMapping = function (pgPool, redisClient) {
   const router = require('express').Router();
-  const statements = require('../util/database/statements');
+  const statements = require('../util/database/statements2');
   const settings = require('../main').settings;
   const getUrlFromKey = require('../util/generation').getUrlFromKey;
 
@@ -24,26 +24,21 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
   d('Initialized middleware');
 
   /**
-   * Return the key if it already exists for this destination
+   * Return the key if it already exists for this destination. Throws error if database connection is down.
    * @param {string} fromUrl The short url
    */
   async function getExistingMappingKey(toUrl) {
-    try {
-      let result = await cassandraClient.execute(
-        statements.SELECT_URL_MAPPING_FROM_DEST_URL,
-        [toUrl]
-      );
+    let result = await pgPool.query(
+      statements.SELECT_URL_MAPPING_FROM_DEST_URL,
+      [toUrl]
+    );
 
-      if (result.rowLength < 1) {
-        return false;
-      }
-
-      result = result.first();
-      return result.from_key;
-    } catch (e) {
-      d('Error in getExistingShortUrl', e);
+    if (result.rows.length < 1) {
       return false;
     }
+
+    result = result.rows[0];
+    return result.from_key;
   }
 
   router.get('/api/v1/url', async function (req, res, next) {
@@ -57,7 +52,13 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
     const originalUrl = req.query.q;
 
     if (originalUrl) {
-      const a = await getExistingMappingKey(originalUrl);
+      try {
+        var a = await getExistingMappingKey(originalUrl);
+      } catch (e) {
+        d('Error in /api/v1/url', e);
+
+        return res.status(503).send('503 Service Unavailable'); // Don't invoke next middleware to stop creation of new urls if the database is down.
+      }
 
       if (a) {
         req.existingMapping = {
@@ -81,17 +82,16 @@ module.exports.withMapping = function (cassandraClient, redisClient) {
     }
 
     try {
-      let result = await cassandraClient.execute(
-        statements.SELECT_URL_MAPPING_FROM_KEY,
-        [letters]
-      );
+      let result = await pgPool.query(statements.SELECT_URL_MAPPING_FROM_KEY, [
+        letters,
+      ]);
 
-      if (result.rowLength < 1) {
+      if (result.rows.length < 1) {
         req.existingMapping = false;
         return next();
       }
 
-      result = result.first();
+      result = result.rows[0];
 
       req.existingMapping = {
         fromUrl: result.from_url,

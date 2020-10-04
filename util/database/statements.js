@@ -1,4 +1,8 @@
 /**
+ * Cassandra statements
+ */
+
+/**
  * Initialize URL mapping table
  */
 module.exports.INIT_URL_MAPPING =

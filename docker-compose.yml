@@ -4,43 +4,29 @@ services:
     image: redis
     ports:
       - '6379:6379'
-  cassandra:
-    image: cassandra
-    ports:
-      - '9042:9042'
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'cqlsh',
-          '-u cassandra',
-          '-p cassandra',
-          '-e "describe keyspaces"',
-        ]
-      interval: 5s
-      timeout: 5m
-      retries: 10
-    volumes:
-      - './data/cassandra:/var/lib/cassandra'
-      - './scripts/cassandra-init.sh:/cassandra-init.sh'
-    command: 'sh /cassandra-init.sh'
-    environment:
-      - CASSANDRA_CLUSTER_NAME=ocurl.io
+  postgres:
+    image: postgres
     restart: always
+    ports:
+      - '5432:5432'
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=ocurl_d
+      - POSTGRES_PASSWORD='secretpassword'
   ocurl:
     build: .
     ports:
       - '3000:3000'
     depends_on:
       - redis
-      - cassandra
+      - postgres
     links:
-      - cassandra
+      - postgres
     restart: always
-    healthcheck:
-      test: ['CMD', 'curl -f', 'localhost:3000/health']
-      interval: 5s
-      timeout: 1m
-      retries: 10
     environment:
       - PORT=3000
+      - PGUSER=ocurl_d
+      - PGPASSWORD='secretpassword'
+      - PGHOST=postgres
+      - PGPORT=5432
