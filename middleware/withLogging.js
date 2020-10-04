@@ -1,5 +1,5 @@
 /**
- * Logs network activity
+ * Logs network activity to debug console, and IP addresses to Stackdriver.
  *
  * @param {import('express').Application} app The express Application to hook onto
  */
@@ -16,15 +16,9 @@ module.exports = function (app) {
   app.use(function (req, res, next) {
     res.on('finish', function () {
       n(`${res.statusCode} ${req.ip} ${req.originalUrl}`);
+      req.log.info(req.ip);
     });
-    return next();
-  });
 
-  /**
-   * Request
-   */
-  router.all('*', function (req, res, next) {
-    n(`${req.method} ${req.ip} ${req.originalUrl}`);
     return next();
   });
 

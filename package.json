@@ -8,13 +8,15 @@
   "license": "private",
   "private": true,
   "dependencies": {
+    "@google-cloud/logging-winston": "^4.0.0",
     "cassandra-driver": "^4.6.0",
     "debug": "^4.1.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "helmet": "^4.1.0",
     "pg": "^8.3.3",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+    "winston": "^3.3.3"
   },
   "scripts": {
     "lint:check": "prettier . --check",

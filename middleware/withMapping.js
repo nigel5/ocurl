@@ -41,36 +41,35 @@ module.exports.withMapping = function (pgPool, redisClient) {
     return result.from_key;
   }
 
-  router.get('/api/v1/url', async function (req, res, next) {
+  router.get('/api/v1/url', function (req, res, next) {
     // Cached
     if (req.existingMapping) {
       // TODO Not implemented
       return next();
     }
 
-    // TODO if not cached then add to ache
+    // TODO Cache the new url
     const originalUrl = req.query.q;
-
     if (originalUrl) {
-      try {
-        var a = await getExistingMappingKey(originalUrl);
-      } catch (e) {
-        d('Error in /api/v1/url', e);
+      getExistingMappingKey(originalUrl)
+        .then((a) => {
+          if (a) {
+            req.existingMapping = {
+              fromUrl: getUrlFromKey(a),
+              toUrl: originalUrl,
+            };
+          } else {
+            req.existingMapping = false;
+          }
 
-        return res.status(503).send('503 Service Unavailable'); // Don't invoke next middleware to stop creation of new urls if the database is down.
-      }
-
-      if (a) {
-        req.existingMapping = {
-          fromUrl: getUrlFromKey(a),
-          toUrl: originalUrl,
-        };
-      } else {
-        req.existingMapping = false;
-      }
+          return next();
+        })
+        .catch((e) => {
+          d(`Error in ${req.path}`, e);
+          req.log.error(e);
+          return res.status(503).send('503 Service Unavailable'); // Don't invoke next middleware to stop creation of new urls if the database is down.
+        });
     }
-
-    next();
   });
 
   router.get('/:key', async function (req, res, next) {
@@ -103,10 +102,11 @@ module.exports.withMapping = function (pgPool, redisClient) {
         redisClient.set(letters, result.to_url, 'EX', cacheExpireTime);
       } catch (e) {
         d('Cache is offline');
-        d(e);
+        req.log.error(e);
       }
     } catch (e) {
       d('Error in withMapping, /*', e);
+      req.log.error(e);
       req.existingMapping = false;
       return next();
     }

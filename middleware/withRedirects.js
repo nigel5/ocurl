@@ -24,20 +24,29 @@ module.exports = function () {
         .sendFile(
           path.join(__PROJECT_PATH_ROOT, 'public', 'privacy-policy.html')
         );
-      return;
+
+      return next();
     }
 
     if (req.existingMapping) {
       a(
         `Redirecting client ${req.ip} ${req.originalUrl} -> ${req.existingMapping.toUrl}`
       );
-      return res.redirect(req.existingMapping.toUrl);
+      req.log.info(
+        `Redirecting client ${req.ip} ${req.originalUrl} -> ${req.existingMapping.toUrl}`
+      );
+      res.redirect(req.existingMapping.toUrl);
     } else {
       a(
         `Redirecting client ${req.ip} ${req.originalUrl} -> ${defaultRedirectUrl}`
       );
-      return res.redirect(defaultRedirectUrl);
+      req.log.info(
+        `Redirecting client ${req.ip} ${req.originalUrl} -> ${defaultRedirectUrl}`
+      );
+      res.redirect(defaultRedirectUrl);
     }
+
+    return next();
   });
 
   return router;
