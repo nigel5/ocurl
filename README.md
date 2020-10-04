@@ -3,15 +3,19 @@
   <img align="center" src="public/img/icon128.png">
 </P>
 
-> OCUrl: URL shortening service API and Chrome Extension
+> OCUrl: URL shortening service API
 
 ## Features
 
-- Public REST api for developers
-- Cached by default (still works if cache is offline!)
+- Public REST API for developers
+- Cached (still works if cache is offline!)
 - Unobtrusive one click Chrome extension to shorten current page URLs and copy to clipboad
-- Ready to be scaled horizontally
 - Simple configuration and deployment. Docker 🐋 ready.
+- Easy configuration
+
+<p align="center">
+  <img align="center" src="images/flow.png">
+</P>
 
 ## Public API
 
@@ -34,11 +38,11 @@ An error response is the following structure
 }
 ```
 
-| Method | Endpoint       | Query parameters?                    | Description                               |
-| ------ | -------------- | ------------------------------------ | ----------------------------------------- |
-| GET    | /api/v1/url    | `q` {string} A valid destination url | Get a short url for destination `q`       |
-| GET    | /api/v1/decode | `q` {string} The short url           | Get destination for short url or key `q`. |
-| ANY    | /api/v1/health | none                                 | Server health [ok 200,unavailable 500]    |
+| Method | Endpoint       | Query parameters?                                                           | Description                               |
+| ------ | -------------- | --------------------------------------------------------------------------- | ----------------------------------------- |
+| GET    | /api/v1/url    | `q` {string} A valid destination url. `l` {number} Length of short url path | Get a short url for destination `q`       |
+| GET    | /api/v1/decode | `q` {string} The short url                                                  | Get destination for short url or key `q`. |
+| ANY    | /api/v1/health | none                                                                        | Server health [ok 200,unavailable 500]    |
 
 ### Example
 
@@ -59,7 +63,7 @@ fetch('https://onecurl.com/api/v1/url?q=https://github.com')
 
 - Node.js v12.18.3 LTS
 - Redis 6
-- Cassandra 3
+- PostgreSQL
 
 ## Docker Setup
 
@@ -69,11 +73,11 @@ To run in Docker,
 
 > docker-compose up --build
 
-This will pull `node:14`, `cassandra:latest`, and `redis:latest`.
+This will pull `node:14`, `cassandra:latest`, and `postgres:latest`.
 
 ## Local Development Setup
 
-First, start up Cassandra, and optionally, Redis if you want a cache. Modify the dev configuration file with the hostname and ports if required. Then,
+First, start up Postgres, and optionally, Redis if you want a cache. Modify the dev configuration file with the hostname and ports if required. Then,
 
 ```javascript
 yarn install
@@ -83,6 +87,14 @@ yarn dev // Nodemon will watch for changes and automatically restart the server
 ## Configuration
 
 Global application settings are exported in `main.js`. Ocurl provides configuration files for development, producation, and docker by default.
+
+## Stackdriver Logging
+
+To enable Google Cloud Platform Operations Logging (formerly known as Stackdriver), export the path to the credentials file.
+
+> EXPORT GOOGLE_APPLICATION_CREDENTIALS="thePath"
+
+Or create a `.env` file in the root of this project with this variable.
 
 ## License
 
