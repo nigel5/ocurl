@@ -7,8 +7,16 @@ module.exports = function (app) {
   const router = require('express').Router();
   const d = require('debug')('middleware:log');
   const n = require('debug')('app:network');
+  const lw = require('@google-cloud/logging-winston');
+
+  const { logger, loggingWinston } = require('../util/logger');
 
   d('Initialized middleware');
+
+  let gcpLogger;
+  lw.express.makeMiddleware(logger, loggingWinston).then((middleware) => {
+    gcpLogger = middleware;
+  });
 
   /**
    * Response
@@ -16,15 +24,11 @@ module.exports = function (app) {
   app.use(function (req, res, next) {
     res.on('finish', function () {
       n(`${res.statusCode} ${req.ip} ${req.originalUrl}`);
-    });
-    return next();
-  });
 
-  /**
-   * Request
-   */
-  router.all('*', function (req, res, next) {
-    n(`${req.method} ${req.ip} ${req.originalUrl}`);
+      if (gcpLogger) {
+        gcpLogger(req, res, next);
+      }
+    });
     return next();
   });
 
