@@ -12,6 +12,9 @@ const withCaching = require('./middleware/withCaching');
 const withLogging = require('./middleware/withLogging');
 const withRateLimiter = require('./middleware/withRateLimiter');
 
+const lw = require('@google-cloud/logging-winston');
+const { logger, loggingWinston } = require('./util/logger');
+
 const d = require('debug')('app:main');
 
 /**
@@ -124,13 +127,24 @@ app.use(
   })
 );
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(withLogging(app));
-app.use(withRateLimiter(redisClient));
-app.use(withCaching(redisClient));
-app.use(withMapping(pgPool, redisClient));
-app.use(withApi(pgPool, redisClient));
-app.use(withRedirects());
+if (logger && loggingWinston) {
+  lw.express
+    .makeMiddleware(logger, loggingWinston)
+    .then((middleware) => {
+      gcpLogger = middleware;
+      app.use(gcpLogger);
+      d('Initialized Stackdriver logging');
+    })
+    .finally(() => {
+      app.use(express.static(path.join(__dirname, 'public')));
+      app.use(withLogging(app));
+      app.use(withRateLimiter(redisClient));
+      app.use(withCaching(redisClient));
+      app.use(withMapping(pgPool, redisClient));
+      app.use(withApi(pgPool, redisClient));
+      app.use(withRedirects());
+    });
+}
 
 app.enable('trust proxy', settings.trust_proxy);
 

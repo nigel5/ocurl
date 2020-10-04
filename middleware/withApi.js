@@ -44,11 +44,13 @@ module.exports = function (pgPool, redisClient) {
   router.get('/api/v1/url', async function (req, res, next) {
     // Dont generate new link if already exists
     if (req.existingMapping) {
-      return res.status(200).send(
+      res.status(200).send(
         responses.dataResponse({
           url: req.existingMapping.fromUrl,
         })
       );
+
+      return next();
     }
 
     const originalUrl = req.query.q;
@@ -58,7 +60,8 @@ module.exports = function (pgPool, redisClient) {
     try {
       new URL(originalUrl);
     } catch (e) {
-      return res
+      req.log.error(e);
+      res
         .status(400)
         .send(
           responses.errResponse(
@@ -66,10 +69,12 @@ module.exports = function (pgPool, redisClient) {
             `Provided URL is invalid. Do you have the protocol prepended?`
           )
         );
+
+      return next();
     }
 
     if (pathLength < 1 || pathLength > maxPathLength) {
-      return res
+      res
         .status(400)
         .send(
           responses.errResponse(
@@ -77,15 +82,19 @@ module.exports = function (pgPool, redisClient) {
             `Provided path length must be between ${1} and ${maxPathLength}`
           )
         );
+
+      return next();
     }
 
     // Generate letters
     const letters = rollStr(pathLength);
 
     if (!originalUrl) {
-      return res
+      res
         .status(400)
         .send(responses.errResponse(true, 'You must provide a url to shorten'));
+
+      return next();
     }
 
     const shortUrl = getUrlFromKey(letters);
@@ -103,6 +112,7 @@ module.exports = function (pgPool, redisClient) {
     } catch (e) {
       d('Cache is offline');
       d(e);
+      req.log.error(e);
     }
 
     // Save in perm database for long term
@@ -115,7 +125,10 @@ module.exports = function (pgPool, redisClient) {
       ]);
     } catch (e) {
       d('Database is down...');
+      req.log.error(e);
     }
+
+    next();
   });
 
   /**
@@ -128,7 +141,7 @@ module.exports = function (pgPool, redisClient) {
     let q = req.query.q;
 
     if (!q) {
-      return res
+      res
         .status(400)
         .send(
           responses.errResponse(
@@ -136,66 +149,47 @@ module.exports = function (pgPool, redisClient) {
             'You must provide a shortened url to decode'
           )
         );
+      return next();
     }
 
     q = q.split('/').pop();
 
     if (req.existingMapping) {
-      return res.status(200).send(responses.dataResponse(req.existingMapping));
+      res.status(200).send(responses.dataResponse(req.existingMapping));
+      return next();
     }
 
     try {
       const result = await shortUrlDecoder(pgPool, q);
 
       if (!result) {
-        return res
+        res
           .status(400)
           .send(responses.errResponse(true, 'The provided url does not exist'));
       } else {
-        return res.send(responses.dataResponse(result));
+        res.send(responses.dataResponse(result));
       }
     } catch (e) {
       d("Error in router.get('/api/v1/decode...", e);
-      return res.status(500).send(responses.internalErrResponse());
+      req.log.error(e);
+      res.status(500).send(responses.internalErrResponse());
     }
+
+    return next();
   });
 
   /**
    * Health Check
    */
-  router.all('/api/v1/health', async function (req, res) {
+  router.all('/api/v1/health', async function (req, res, next) {
     // The overall service is still up as long as database is online.
     if (pgConnectionStatus()) {
       res.status(200).send('OK');
     } else {
       res.status(503).send('503 Service Unavailable');
     }
-    /**
-     * Test Cache
-     */
-    // if (redisClient) {
-    //   redisClient.set('healthCheckZZZ', '_', 'EX', '1', async function (
-    //     err,
-    //     reply
-    //   ) {
-    //     // Test key
-    //     if (reply) {
-    //       /**
-    //        * Test Database
-    //        */
-    //       try {
-    //         await pgPool.query(statements.HEALTH_CHECK);
-    //         return res.status(200).send('OK');
-    //       } catch (e) {
-    //         return res.status(503).send('503 Service Unavailable');
-    //       }
-    //     } else {
-    //       return res.status(503).send('unavailable');
-    //     }
-    //   });
-    // } else {
-    //   res.status(503).send('503 Service Unavailable');
-    // }
+
+    return next();
   });
 
   return router;

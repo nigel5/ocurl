@@ -32,7 +32,7 @@ if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
 
   const logger = winston.createLogger({
     level: 'info',
-    transports: [new winston.transports.Console(), loggingWinston],
+    transports: [loggingWinston],
   });
 
   module.exports.logger = logger;
