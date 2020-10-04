@@ -5,6 +5,10 @@
 
 > OCUrl: URL shortening service API
 
+<p align="center">
+  Extensions: 
+  <a href="https://github.com/nigel5/ocurl-discord" target="_blank" rel="noopener noreferrer">Discord Bot</a> | <a href="https://chrome.google.com/webstore/detail/1-click-url/obmdcjlmgabdmcoiconimmddlfldpjni?hl=en-GB&authuser=0" target="_blank" rel="noopener noreferrer">Chrome Extension</a>
+</P>
 ## Features
 
 - Public REST API for developers
@@ -12,6 +16,7 @@
 - Unobtrusive one click Chrome extension to shorten current page URLs and copy to clipboad
 - Simple configuration and deployment. Docker 🐋 ready.
 - Easy configuration
+- Google Cloud Operations ready
 
 <p align="center">
   <img align="center" src="images/flow.png">
@@ -67,13 +72,13 @@ fetch('https://onecurl.com/api/v1/url?q=https://github.com')
 
 ## Docker Setup
 
-Ocurl is also available as a Docker application.
+The easiest way to setup the application is by using Docker.
 
 To run in Docker,
 
 > docker-compose up --build
 
-This will pull `node:14`, `cassandra:latest`, and `postgres:latest`.
+This will pull `node:14`, `redis:latest`, and `postgres:latest`.
 
 ## Local Development Setup
 
@@ -98,4 +103,4 @@ Or create a `.env` file in the root of this project with this variable.
 
 ## License
 
-**Private**
+**MIT**
