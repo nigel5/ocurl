@@ -3,12 +3,15 @@
   <img align="center" src="public/img/icon128.png">
 </P>
 
+Check it out at ocurl.io
+
 > OCUrl: URL shortening service API
 
 <p align="center">
   Extensions: 
   <a href="https://github.com/nigel5/ocurl-discord" target="_blank" rel="noopener noreferrer">Discord Bot</a> | <a href="https://chrome.google.com/webstore/detail/1-click-url/obmdcjlmgabdmcoiconimmddlfldpjni?hl=en-GB&authuser=0" target="_blank" rel="noopener noreferrer">Chrome Extension</a>
 </P>
+
 ## Features
 
 - Public REST API for developers
