@@ -30,7 +30,7 @@
     "husky": "^4.3.0",
     "lint-staged": "^10.2.13",
     "nodemon": "^2.0.4",
-    "pino-pretty": "^4.2.0",
+    "pino-pretty": "^4.2.1",
     "prettier": "2.1.2"
   },
   "husky": {
