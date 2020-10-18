@@ -10,11 +10,11 @@
   "dependencies": {
     "@google-cloud/logging-winston": "^4.0.0",
     "cassandra-driver": "^4.6.0",
-    "debug": "^4.1.1",
+    "debug": "^4.2.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "helmet": "^4.1.0",
-    "pg": "^8.3.3",
+    "helmet": "^4.1.1",
+    "pg": "^8.4.1",
     "redis": "^3.0.2",
     "winston": "^3.3.3"
   },
@@ -25,13 +25,13 @@
     "start": "NODE_ENV=production DEBUG=middleware:*,app:* node main.js"
   },
   "devDependencies": {
-    "@commitlint/cli": "^9.1.2",
-    "@commitlint/config-conventional": "^9.1.2",
-    "husky": "^4.2.5",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "husky": "^4.3.0",
     "lint-staged": "^10.2.13",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.5",
     "pino-pretty": "^4.2.0",
-    "prettier": "2.1.1"
+    "prettier": "2.1.2"
   },
   "husky": {
     "hooks": {
