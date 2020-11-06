@@ -21,6 +21,15 @@ Check it out at ocurl.io
 - Easy configuration
 - Google Cloud Operations ready
 
+## System Diagram
+
+<p align="center">
+  <img align="center" src="images/system.png">
+</P>
+Not mentioned is the backup database, and CDN for the homepage.
+
+## Middleware Diagram
+
 <p align="center">
   <img align="center" src="images/flow.png">
 </P>
