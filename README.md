@@ -104,6 +104,11 @@ yarn dev // Nodemon will watch for changes and automatically restart the server
 ## Configuration
 
 Global application settings are exported in `main.js`. Ocurl provides configuration files for development, producation, and docker by default.
+`ocurl.conf.dev.json`, `ocurl.conf.docker.json`, `ocurl.conf.prod.json`. The configuration files are loaded depending on the environmental variable.
+
+### Rate Limiter Setting
+
+The rate limiter can be configured with maximum number of requests, and time in seconds till expiry.
 
 ## Stackdriver Logging
 
