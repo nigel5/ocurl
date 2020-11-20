@@ -31,7 +31,7 @@
     "lint-staged": "^10.5.0",
     "nodemon": "^2.0.5",
     "pino-pretty": "^4.2.0",
-    "prettier": "2.1.2"
+    "prettier": "2.2.0"
   },
   "husky": {
     "hooks": {
