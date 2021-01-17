@@ -679,10 +679,10 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
-cassandra-driver@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/cassandra-driver/-/cassandra-driver-4.6.0.tgz#fd10fecb7069cb2e499b58efffbd05166020a314"
-  integrity sha512-OCYJ3Zuy2La0qf+7dfeYlG3X4C0ns1cbPu0hhpC3xyUWqTy1Ai9a4mlQjSBqbcHi51gdFB5UbS0fWJzZIY6NXw==
+cassandra-driver@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/cassandra-driver/-/cassandra-driver-4.6.1.tgz#eb0be64e8c5ab18c9204495f68031ff1deb3ac3f"
+  integrity sha512-Vk0kUHlMV4vFXRPwRpKnCZEEMZkp9/RucBDB7gpaUmn9sCusKzzUzVkXeusTxKSoGuIgLJJ7YBiFJdXOctUS7A==
   dependencies:
     "@types/long" "^4.0.0"
     "@types/node" ">=8"
