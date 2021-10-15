@@ -40,20 +40,27 @@ module.exports = function (redisClient) {
     redisClient.llen(currentIpKey, function (err, reply) {
       if (err) {
         d('Error in rate limiter. Rate limiter has been bypassed', e);
-        req.log.error(e);
+        if (req.log)
+        req.log.error(err);
+        else
+          d(err);
         return next();
       } else if (reply != null && reply > rateLimit) {
         d(
           `Rate limit reached for this client ${res.statusCode} ${req.ip} ${req.originalUrl}`
         );
-        req.log.info(
-          `Rate limit reached for this client ${res.statusCode} ${req.ip} ${req.originalUrl}`
-        );
+        if (req.log)
+          req.log.info(
+            `Rate limit reached for this client ${res.statusCode} ${req.ip} ${req.originalUrl}`
+          );
         return res.status(429).send(errResponse(true, 'Too many requests'));
       } else {
         redisClient.exists(currentIpKey, function (err, exists) {
           if (err) {
-            req.log.error(err);
+            if (req.log)
+              req.log.error(err);
+            else
+              d(err);
           } else if (!exists) {
             redisClient
               .multi([
@@ -63,7 +70,8 @@ module.exports = function (redisClient) {
               .exec(function (e, reply) {
                 if (e) {
                   d('Error in rate limiter. Rate limiter has been bypassed', e);
-                  req.log.error(e);
+                  if(req.log) req.log.error(e);
+                  else d(e);
                 }
               });
           } else {

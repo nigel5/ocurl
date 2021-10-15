@@ -16,7 +16,8 @@ module.exports = function (app) {
   app.use(function (req, res, next) {
     res.on('finish', function () {
       n(`${res.statusCode} ${req.ip} ${req.originalUrl}`);
-      req.log.info(req.ip);
+      if (req.log)
+        req.log.info(req.ip);
     });
 
     return next();

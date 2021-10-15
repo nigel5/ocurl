@@ -130,11 +130,14 @@ app.use(
 if (logger && loggingWinston) {
   lw.express
     .makeMiddleware(logger, loggingWinston)
-    .then((middleware) => {
-      gcpLogger = middleware;
-      app.use(gcpLogger);
-      d('Initialized Stackdriver logging');
+    .then((middleware, err) => {
+      if (!err) {
+        gcpLogger = middleware;
+        app.use(gcpLogger);
+        d('Initialized Stackdriver logging');
+      }
     })
+    .catch(() => { d('No Stackdriver logging'); })
     .finally(() => {
       app.use(express.static(path.join(__dirname, 'public')));
       app.use(withLogging(app));

@@ -35,7 +35,8 @@ module.exports = function (redisClient) {
       redisClient.get(key, function (err, reply) {
         if (err) {
           d('Cache is offline', err);
-          req.log.error(err);
+          if (req.log)
+            req.log.error(err);
           resolve(false);
         } else if (reply === null) {
           resolve(false);
@@ -62,12 +63,13 @@ module.exports = function (redisClient) {
 
     if (cachedResult) {
       d('Using cached mapping', cachedResult.fromUrl, '->', cachedResult.toUrl);
-      req.log.info(
-        'Using cached mapping',
-        cachedResult.fromUrl,
-        '->',
-        cachedResult.toUrl
-      );
+      if (req.log)
+        req.log.info(
+          'Using cached mapping',
+          cachedResult.fromUrl,
+          '->',
+          cachedResult.toUrl
+        );
       req.existingMapping = cachedResult;
     }
 
@@ -84,12 +86,13 @@ module.exports = function (redisClient) {
 
     if (cachedResult) {
       d('Using cached mapping', cachedResult.fromUrl, '->', cachedResult.toUrl);
-      req.log.info(
-        'Using cached mapping',
-        cachedResult.fromUrl,
-        '->',
-        cachedResult.toUrl
-      );
+      if (req.log)
+        req.log.info(
+          'Using cached mapping',
+          cachedResult.fromUrl,
+          '->',
+          cachedResult.toUrl
+        );
       req.existingMapping = cachedResult;
     }
 

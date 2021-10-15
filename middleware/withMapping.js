@@ -66,7 +66,7 @@ module.exports.withMapping = function (pgPool, redisClient) {
         })
         .catch((e) => {
           d(`Error in ${req.path}`, e);
-          req.log.error(e);
+          if (req.log) req.log.error(e);
           return res.status(503).send('503 Service Unavailable'); // Don't invoke next middleware to stop creation of new urls if the database is down.
         });
     }
@@ -101,12 +101,12 @@ module.exports.withMapping = function (pgPool, redisClient) {
       try {
         redisClient.set(letters, result.to_url, 'EX', cacheExpireTime);
       } catch (e) {
-        d('Cache is offline');
-        req.log.error(e);
+        d('Cache is offline', e);
+        if (req.log) req.log.error(e);
       }
     } catch (e) {
       d('Error in withMapping, /*', e);
-      req.log.error(e);
+      if (req.log) req.log.error(e);
       req.existingMapping = false;
       return next();
     }

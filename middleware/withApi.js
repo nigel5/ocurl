@@ -60,7 +60,10 @@ module.exports = function (pgPool, redisClient) {
     try {
       new URL(originalUrl);
     } catch (e) {
-      req.log.error(e);
+      if (req.log)
+        req.log.error(e);
+      else
+        console.log(e);
       res
         .status(400)
         .send(
@@ -112,7 +115,8 @@ module.exports = function (pgPool, redisClient) {
     } catch (e) {
       d('Cache is offline');
       d(e);
-      req.log.error(e);
+      if (req.log)
+        req.log.error(e);
     }
 
     // Save in perm database for long term
@@ -125,7 +129,10 @@ module.exports = function (pgPool, redisClient) {
       ]);
     } catch (e) {
       d('Database is down...');
-      req.log.error(e);
+      if (req.log)
+        req.log.error(e);
+      else
+        console.log(e);
     }
 
     next();
@@ -171,7 +178,10 @@ module.exports = function (pgPool, redisClient) {
       }
     } catch (e) {
       d("Error in router.get('/api/v1/decode...", e);
-      req.log.error(e);
+      if (req.log)
+        req.log.error(e);
+      else
+        console.log(e);
       res.status(500).send(responses.internalErrResponse());
     }
 
