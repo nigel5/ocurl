@@ -27,5 +27,3 @@ services:
       - PGPASSWORD='secretpassword'
       - PGHOST=postgres
       - PGPORT=5432
-    volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:${GOOGLE_APPLICATION_CREDENTIALS}
