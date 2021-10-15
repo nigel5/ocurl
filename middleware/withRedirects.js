@@ -32,7 +32,7 @@ module.exports = function () {
       a(
         `Redirecting client ${req.ip} ${req.originalUrl} -> ${req.existingMapping.toUrl}`
       );
-      req.log.info(
+      if (req.log) req.log.info(
         `Redirecting client ${req.ip} ${req.originalUrl} -> ${req.existingMapping.toUrl}`
       );
       res.redirect(req.existingMapping.toUrl);
@@ -40,7 +40,7 @@ module.exports = function () {
       a(
         `Redirecting client ${req.ip} ${req.originalUrl} -> ${defaultRedirectUrl}`
       );
-      req.log.info(
+      if (req.log) req.log.info(
         `Redirecting client ${req.ip} ${req.originalUrl} -> ${defaultRedirectUrl}`
       );
       res.redirect(defaultRedirectUrl);
