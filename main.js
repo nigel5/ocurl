@@ -137,17 +137,16 @@ if (logger && loggingWinston) {
         d('Initialized Stackdriver logging');
       }
     })
-    .catch(() => { d('No Stackdriver logging'); })
-    .finally(() => {
-      app.use(express.static(path.join(__dirname, 'public')));
-      app.use(withLogging(app));
-      app.use(withRateLimiter(redisClient));
-      app.use(withCaching(redisClient));
-      app.use(withMapping(pgPool, redisClient));
-      app.use(withApi(pgPool, redisClient));
-      app.use(withRedirects());
-    });
+    .catch(() => { d('No Stackdriver logging'); });
 }
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(withLogging(app));
+app.use(withRateLimiter(redisClient));
+app.use(withCaching(redisClient));
+app.use(withMapping(pgPool, redisClient));
+app.use(withApi(pgPool, redisClient));
+app.use(withRedirects());
 
 app.enable('trust proxy', settings.trust_proxy);
 
